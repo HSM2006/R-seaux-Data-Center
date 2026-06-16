@@ -1,0 +1,28 @@
+#!/bin/bash
+# Démarrage FRR pour conteneurs Containerlab (SAE DevCloud 4D01)
+# Évite watchfrr (qui bloque dans les conteneurs) : daemons lancés à la main + vtysh -b
+set +e
+
+mkdir -p /var/run/frr
+chown -R frr:frr /var/run/frr 2>/dev/null || true
+
+# IP forwarding — INDISPENSABLE : les spines routent le transport VXLAN underlay
+sysctl -w net.ipv4.ip_forward=1 >/dev/null 2>&1 || echo 1 > /proc/sys/net/ipv4/ip_forward 2>/dev/null || true
+
+# Config intégrée : vtysh -b lit /etc/frr/frr.conf (bind-monté) et l'applique à tous les daemons
+echo 'service integrated-vtysh-config' > /etc/frr/vtysh.conf
+
+# Démarrage des daemons (ordre : zebra d'abord)
+/usr/lib/frr/zebra   -d -A 127.0.0.1 -s 90000000
+sleep 1
+/usr/lib/frr/staticd -d -A 127.0.0.1
+grep -q '^ospfd=yes' /etc/frr/daemons 2>/dev/null && /usr/lib/frr/ospfd -d -A 127.0.0.1
+grep -q '^bgpd=yes'  /etc/frr/daemons 2>/dev/null && /usr/lib/frr/bgpd  -d -A 127.0.0.1
+grep -q '^bfdd=yes'  /etc/frr/daemons 2>/dev/null && /usr/lib/frr/bfdd  -d -A 127.0.0.1
+sleep 2
+
+# Charger la configuration
+vtysh -b 2>/dev/null
+
+# Garder le conteneur vivant
+exec tail -f /dev/null
