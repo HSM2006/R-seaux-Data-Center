@@ -1,131 +1,72 @@
 #!/bin/bash
 # ============================================================
-# setup-vtep.sh — Création bridges VXLAN sur les 3 leafs
-# Adressage services : 172.20.1.0/24
-# VNI : 10100
-# Auteur : Houssam
-# Usage : bash setup-vtep.sh [leaf1|leaf2|leaf3|all]
+# setup-vtep.sh — Bridges VXLAN sur les leafs + transport sur les spines
+# SAE DevCloud 4D01 — Houssam
+# VNI 10100 / services 172.20.1.0/24 / gateway host 172.20.1.254
 # ============================================================
-
 set -e
 
-CONTAINERS=("clab-dc1-evpn-leaf1" "clab-dc1-evpn-leaf2" "clab-dc1-evpn-leaf3")
+PREFIX="clab-dc1-evpn"
 VNI=10100
 BRIDGE="br10100"
 VXLAN_IF="vxlan10100"
-SERVICE_NET="172.20.1.0/24"
 
-setup_leaf() {
-  local CONTAINER=$1
-  local VTEP_IP=$2
-  local SERVICE_IFACE=$3  # eth3 ou eth4 selon ce qui est libre
+# loopback (= local VTEP IP) de chaque leaf
+declare -A VTEP_IP=(
+  [leaf1]="172.16.255.11"
+  [leaf2]="172.16.255.12"
+  [leaf3]="172.16.255.13"
+)
 
-  echo "==> Setup VTEP sur $CONTAINER (VTEP IP: $VTEP_IP)"
+dexec() { docker exec "$1" bash -c "$2"; }
 
-  docker exec "$CONTAINER" bash -c "
-    set -e
-    # Activer le forwarding IP
-    sysctl -w net.ipv4.ip_forward=1 > /dev/null
+# ---- ip_forward partout (les SPINES routent le transport VXLAN underlay) ----
+echo "==> ip_forward sur tous les noeuds FRR"
+for NODE in spine1 spine2 leaf1 leaf2 leaf3; do
+  dexec "${PREFIX}-${NODE}" "sysctl -w net.ipv4.ip_forward=1 >/dev/null"
+done
 
-    # Persister dans /etc/sysctl.conf
-    grep -q 'net.ipv4.ip_forward=1' /etc/sysctl.conf 2>/dev/null || \
-      echo 'net.ipv4.ip_forward=1' >> /etc/sysctl.conf
+# ---- iptables host : autoriser le forward ----
+echo "==> iptables FORWARD ACCEPT (host)"
+iptables -P FORWARD ACCEPT 2>/dev/null || true
+iptables -I DOCKER-USER -j ACCEPT 2>/dev/null || true
 
-    # Supprimer le bridge s'il existe déjà (idempotent)
-    ip link show $BRIDGE > /dev/null 2>&1 && ip link del $BRIDGE || true
-    ip link show $VXLAN_IF > /dev/null 2>&1 && ip link del $VXLAN_IF || true
+# ---- Bridge + VXLAN sur chaque leaf ----
+for LEAF in leaf1 leaf2 leaf3; do
+  C="${PREFIX}-${LEAF}"
+  IP="${VTEP_IP[$LEAF]}"
+  echo "==> VTEP $LEAF (local $IP)"
 
-    # Créer le bridge L2
-    ip link add $BRIDGE type bridge
-    ip link set $BRIDGE up
+  # idempotent
+  dexec "$C" "ip link del $VXLAN_IF 2>/dev/null || true; ip link del $BRIDGE 2>/dev/null || true"
 
-    # Créer l'interface VXLAN (VTEP)
-    ip link add $VXLAN_IF type vxlan id $VNI local $VTEP_IP dstport 4789 nolearning
-    ip link set $VXLAN_IF up
+  # bridge L2
+  dexec "$C" "ip link add $BRIDGE type bridge; ip link set $BRIDGE up"
 
-    # Attacher VXLAN au bridge
-    ip link set $VXLAN_IF master $BRIDGE
+  # interface VXLAN (VTEP)
+  dexec "$C" "ip link add $VXLAN_IF type vxlan id $VNI local $IP dstport 4789 nolearning"
+  dexec "$C" "ip link set $VXLAN_IF master $BRIDGE; ip link set $VXLAN_IF up"
 
-    echo '  Bridge $BRIDGE et VXLAN $VXLAN_IF créés'
-  "
+  # attacher les ports services eth3 + eth4 au bridge
+  for IFACE in eth3 eth4; do
+    if dexec "$C" "ip link show $IFACE >/dev/null 2>&1"; then
+      dexec "$C" "ip link set $IFACE up; ip link set $IFACE master $BRIDGE"
+      echo "   $IFACE -> $BRIDGE"
+    fi
+  done
+done
 
-  echo "  OK $CONTAINER"
-}
+# ---- Connexion du host VM au fabric (gateway services) ----
+echo "==> veth host -> $BRIDGE sur leaf1 (gateway 172.20.1.254)"
+L1="${PREFIX}-leaf1"
+ip link del veth-host 2>/dev/null || true
+ip link add veth-host type veth peer name veth-leaf
+PID=$(docker inspect -f '{{.State.Pid}}' "$L1")
+ip link set veth-leaf netns "$PID"
+docker exec "$L1" ip link set veth-leaf up
+docker exec "$L1" ip link set veth-leaf master "$BRIDGE"
+ip link set veth-host up
+ip addr add 172.20.1.254/24 dev veth-host 2>/dev/null || true
 
-setup_host_veth() {
-  echo "==> Setup veth host -> br10100 sur leaf1"
-  LEAF1="clab-dc1-evpn-leaf1"
-  HOST_IP="172.20.1.254"
-
-  # Veth pair : veth-host (host) <-> veth-leaf (dans leaf1)
-  ip link show veth-host > /dev/null 2>&1 && ip link del veth-host || true
-
-  ip link add veth-host type veth peer name veth-leaf
-
-  # Passer veth-leaf dans le namespace du container leaf1
-  PID=$(docker inspect -f '{{.State.Pid}}' "$LEAF1")
-  ip link set veth-leaf netns "$PID"
-
-  # Config côté leaf1
-  docker exec "$LEAF1" bash -c "
-    ip link set veth-leaf up
-    ip link set veth-leaf master $BRIDGE
-  "
-
-  # Config côté host
-  ip link set veth-host up
-  ip addr add ${HOST_IP}/24 dev veth-host || true
-
-  echo "  Host connecté au fabric VXLAN via veth-host (IP: $HOST_IP)"
-}
-
-# iptables pour permettre le forwarding
-setup_iptables() {
-  echo "==> Configuration iptables"
-  iptables -P FORWARD ACCEPT
-  iptables -I DOCKER-USER -j ACCEPT 2>/dev/null || true
-  echo "  iptables OK"
-}
-
-# Main
-case "${1:-all}" in
-  leaf1)
-    setup_leaf "clab-dc1-evpn-leaf1" "172.16.255.11"
-    ;;
-  leaf2)
-    setup_leaf "clab-dc1-evpn-leaf2" "172.16.255.12"
-    ;;
-  leaf3)
-    setup_leaf "clab-dc1-evpn-leaf3" "172.16.255.13"
-    ;;
-  all)
-    setup_iptables
-    setup_leaf "clab-dc1-evpn-leaf1" "172.16.255.11"
-    setup_leaf "clab-dc1-evpn-leaf2" "172.16.255.12"
-    setup_leaf "clab-dc1-evpn-leaf3" "172.16.255.13"
-
-    # Attacher eth3/eth4 (services) au bridge sur chaque leaf
-    for LEAF in "clab-dc1-evpn-leaf1" "clab-dc1-evpn-leaf2" "clab-dc1-evpn-leaf3"; do
-      docker exec "$LEAF" bash -c "
-        for IFACE in eth3 eth4; do
-          ip link show \$IFACE > /dev/null 2>&1 && {
-            ip link set \$IFACE up
-            ip link set \$IFACE master br10100
-            echo '  \$IFACE attaché à br10100 sur \$(hostname)'
-          } || true
-        done
-      "
-    done
-
-    setup_host_veth
-    echo ""
-    echo "=== VTEP setup terminé ==="
-    echo "Services subnet : $SERVICE_NET"
-    echo "Gateway host    : 172.20.1.254"
-    echo "VNI             : $VNI"
-    ;;
-  *)
-    echo "Usage: $0 [leaf1|leaf2|leaf3|all]"
-    exit 1
-    ;;
-esac
+echo ""
+echo "=== VTEP setup terminé : VNI $VNI, services 172.20.1.0/24, gw 172.20.1.254 ==="
