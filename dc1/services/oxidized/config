@@ -1,0 +1,46 @@
+---
+username: admin
+password: DevCloud2025!
+model: ios
+resolve_dns: true
+interval: 3600
+use_syslog: false
+debug: false
+threads: 30
+timeout: 20
+retries: 3
+prompt: !ruby/regexp /^([\w.@-]+[#>]\s*)$/
+rest: 0.0.0.0:8888
+pid: "/home/oxidized/.config/oxidized/pid"
+
+output:
+  default: git
+  git:
+    user: Houssam
+    email: hsmprv2006@gmail.com
+    repo: "/home/oxidized/.config/oxidized/oxidized.git"
+
+source:
+  default: csv
+  csv:
+    file: "/home/oxidized/.config/oxidized/router.db"
+    delimiter: !ruby/regexp /:/
+    map:
+      name: 0
+      ip: 1
+      model: 2
+
+model_map:
+  cisco: ios
+  juniper: junos
+  mikrotik: routeros
+  frr: frr
+
+hooks:
+  push_to_git:
+    type: githubrepo
+    events: [post_store]
+    remote_repo: https://Houssam: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@github.com/HSM2006/R-seaux-Data-Center.git
+    remote_branch: configs-backup
+    username: Houssam
+    password: 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
