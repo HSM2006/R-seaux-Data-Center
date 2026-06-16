@@ -59,16 +59,18 @@ topology:
       exec:
         - ip addr add 172.20.1.10/24 dev eth1
         - ip link set eth1 up
-        - ip route add default via 172.20.1.254
+        - ip route replace default via 172.20.1.254
         - "sh -c 'echo \"<h1>DC1 - Web1 - leaf1</h1>\" > /usr/share/nginx/html/index.html'"
 
     dns1:
       kind: linux
-      image: mvance/unbound:latest
+      image: alpine:latest
+      cmd: sleep infinity
       exec:
+        - apk add --no-cache unbound
         - ip addr add 172.20.1.20/24 dev eth1
         - ip link set eth1 up
-        - ip route add default via 172.20.1.254
+        - ip route replace default via 172.20.1.254
 
     # ---- Services sur leaf2 : web2 + dns2 (HA) ----
     web2:
@@ -77,16 +79,18 @@ topology:
       exec:
         - ip addr add 172.20.1.11/24 dev eth1
         - ip link set eth1 up
-        - ip route add default via 172.20.1.254
+        - ip route replace default via 172.20.1.254
         - "sh -c 'echo \"<h1>DC1 - Web2 - leaf2</h1>\" > /usr/share/nginx/html/index.html'"
 
     dns2:
       kind: linux
-      image: mvance/unbound:latest
+      image: alpine:latest
+      cmd: sleep infinity
       exec:
+        - apk add --no-cache unbound
         - ip addr add 172.20.1.21/24 dev eth1
         - ip link set eth1 up
-        - ip route add default via 172.20.1.254
+        - ip route replace default via 172.20.1.254
 
     # ---- Services sur leaf3 : web3 + samba/AD ----
     web3:
@@ -95,33 +99,26 @@ topology:
       exec:
         - ip addr add 172.20.1.12/24 dev eth1
         - ip link set eth1 up
-        - ip route add default via 172.20.1.254
+        - ip route replace default via 172.20.1.254
         - "sh -c 'echo \"<h1>DC1 - Web3 - leaf3</h1>\" > /usr/share/nginx/html/index.html'"
 
     samba:
       kind: linux
       image: dockurr/samba
-      env:
-        ACCOUNT_username: "admin"
-        ACCOUNT_password: "DevCloud2025!"
-        SHARE_name: "data"
-        SHARE_path: "/data"
-        SHARE_browseable: "yes"
-        SHARE_readonly: "no"
       exec:
         - ip addr add 172.20.1.30/24 dev eth1
         - ip link set eth1 up
-        - ip route add default via 172.20.1.254
+        - ip route replace default via 172.20.1.254
 
   links:
     # ---- Full mesh spine-leaf (underlay) ----
-    - endpoints: [spine1:eth1, leaf1:eth1]   # 172.16.0.0/31
-    - endpoints: [spine1:eth2, leaf2:eth1]   # 172.16.0.2/31
-    - endpoints: [spine1:eth3, leaf3:eth1]   # 172.16.0.4/31
-    - endpoints: [spine2:eth1, leaf1:eth2]   # 172.16.0.6/31
-    - endpoints: [spine2:eth2, leaf2:eth2]   # 172.16.0.8/31
-    - endpoints: [spine2:eth3, leaf3:eth2]   # 172.16.0.10/31
-    # ---- Services vers leafs (overlay L2 via br10100) ----
+    - endpoints: [spine1:eth1, leaf1:eth1]
+    - endpoints: [spine1:eth2, leaf2:eth1]
+    - endpoints: [spine1:eth3, leaf3:eth1]
+    - endpoints: [spine2:eth1, leaf1:eth2]
+    - endpoints: [spine2:eth2, leaf2:eth2]
+    - endpoints: [spine2:eth3, leaf3:eth2]
+    # ---- Services vers leafs ----
     - endpoints: [leaf1:eth3, web1:eth1]
     - endpoints: [leaf1:eth4, dns1:eth1]
     - endpoints: [leaf2:eth3, web2:eth1]
