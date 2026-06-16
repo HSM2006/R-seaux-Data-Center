@@ -19,7 +19,7 @@ echo "============================================"
 # 1. Construire l'image FRR custom si nécessaire
 if ! docker image inspect frrouting/frr:custom > /dev/null 2>&1; then
   echo "[1/6] Build image FRR custom..."
-  docker build -t frrouting/frr:latest ../frr-custom/
+  docker build -t frrouting/frr:latest dc1/frr-custom/
 else
   echo "[1/6] Image FRR custom déjà présente, skip"
 fi
