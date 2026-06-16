@@ -1,0 +1,52 @@
+# Prometheus — configuration DC1
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # Métriques FRR via frr-exporter (si installé)
+  - job_name: 'frr-leaf1'
+    static_configs:
+      - targets: ['172.16.255.11:9342']
+
+  - job_name: 'frr-leaf2'
+    static_configs:
+      - targets: ['172.16.255.12:9342']
+
+  - job_name: 'frr-leaf3'
+    static_configs:
+      - targets: ['172.16.255.13:9342']
+
+  - job_name: 'frr-spine1'
+    static_configs:
+      - targets: ['172.16.255.1:9342']
+
+  - job_name: 'frr-spine2'
+    static_configs:
+      - targets: ['172.16.255.2:9342']
+
+  # Catalyst 8000 via SNMP exporter
+  - job_name: 'snmp-catalyst'
+    static_configs:
+      - targets: ['10.202.0.12']
+    metrics_path: /snmp
+    params:
+      module: [if_mib]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: snmp-exporter:9116
+
+  # Uptime Kuma via prometheus endpoint
+  - job_name: 'uptime-kuma'
+    static_configs:
+      - targets: ['172.20.1.50:3001']
+    metrics_path: /metrics
+
+  # Node exporter host VM
+  - job_name: 'node-vm'
+    static_configs:
+      - targets: ['10.202.0.60:9100']

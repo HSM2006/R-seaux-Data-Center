@@ -1,0 +1,37 @@
+# gNMIc — Telemetrie réseau DC1
+targets:
+  "172.16.255.11:57400":
+    username: admin
+    password: DevCloud2025!
+    skip-verify: true
+    subscriptions:
+      - sub1
+  "172.16.255.12:57400":
+    username: admin
+    password: DevCloud2025!
+    skip-verify: true
+    subscriptions:
+      - sub1
+  "172.16.255.13:57400":
+    username: admin
+    password: DevCloud2025!
+    skip-verify: true
+    subscriptions:
+      - sub1
+
+subscriptions:
+  sub1:
+    paths:
+      - /interfaces/interface/state/counters
+      - /network-instances/network-instance/protocols/protocol/bgp/neighbors
+    mode: stream
+    stream-mode: sample
+    sample-interval: 10s
+    encoding: json_ietf
+
+outputs:
+  prom:
+    type: prometheus
+    listen: :9804
+    path: /metrics
+    expiration: 5m
