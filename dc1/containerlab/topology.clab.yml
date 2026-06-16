@@ -1,0 +1,130 @@
+# ============================================================
+# SAE DevCloud 4D01 — DC1 Containerlab Topology
+# Auteur : Houssam
+# Adressage services : 172.20.1.0/24
+# Underlay            : 172.16.0.0/24 (P2P /31) + 172.16.255.x/32 (loopbacks)
+# Overlay EVPN        : VNI 10100
+# Gateway fabric      : 172.20.1.254/24 (veth-host sur br10100 de leaf1)
+# ============================================================
+name: dc1-evpn
+
+topology:
+  nodes:
+    # ---- Spines (Route Reflectors EVPN) ----
+    spine1:
+      kind: linux
+      image: frrouting/frr:latest
+      cap-add: [NET_ADMIN, SYS_ADMIN]
+      binds:
+        - frr/daemons:/etc/frr/daemons
+        - frr/bgp/spine1.conf:/etc/frr/frr.conf
+
+    spine2:
+      kind: linux
+      image: frrouting/frr:latest
+      cap-add: [NET_ADMIN, SYS_ADMIN]
+      binds:
+        - frr/daemons:/etc/frr/daemons
+        - frr/bgp/spine2.conf:/etc/frr/frr.conf
+
+    # ---- Leafs (VTEPs VXLAN) ----
+    leaf1:
+      kind: linux
+      image: frrouting/frr:latest
+      cap-add: [NET_ADMIN, SYS_ADMIN]
+      binds:
+        - frr/daemons:/etc/frr/daemons
+        - frr/bgp/leaf1.conf:/etc/frr/frr.conf
+
+    leaf2:
+      kind: linux
+      image: frrouting/frr:latest
+      cap-add: [NET_ADMIN, SYS_ADMIN]
+      binds:
+        - frr/daemons:/etc/frr/daemons
+        - frr/bgp/leaf2.conf:/etc/frr/frr.conf
+
+    leaf3:
+      kind: linux
+      image: frrouting/frr:latest
+      cap-add: [NET_ADMIN, SYS_ADMIN]
+      binds:
+        - frr/daemons:/etc/frr/daemons
+        - frr/bgp/leaf3.conf:/etc/frr/frr.conf
+
+    # ---- Services sur leaf1 : web1 + dns1 ----
+    web1:
+      kind: linux
+      image: nginx:alpine
+      exec:
+        - ip addr add 172.20.1.10/24 dev eth1
+        - ip link set eth1 up
+        - ip route add default via 172.20.1.254
+        - "sh -c 'echo \"<h1>DC1 - Web1 - leaf1</h1>\" > /usr/share/nginx/html/index.html'"
+
+    dns1:
+      kind: linux
+      image: mvance/unbound:latest
+      exec:
+        - ip addr add 172.20.1.20/24 dev eth1
+        - ip link set eth1 up
+        - ip route add default via 172.20.1.254
+
+    # ---- Services sur leaf2 : web2 + dns2 (HA) ----
+    web2:
+      kind: linux
+      image: nginx:alpine
+      exec:
+        - ip addr add 172.20.1.11/24 dev eth1
+        - ip link set eth1 up
+        - ip route add default via 172.20.1.254
+        - "sh -c 'echo \"<h1>DC1 - Web2 - leaf2</h1>\" > /usr/share/nginx/html/index.html'"
+
+    dns2:
+      kind: linux
+      image: mvance/unbound:latest
+      exec:
+        - ip addr add 172.20.1.21/24 dev eth1
+        - ip link set eth1 up
+        - ip route add default via 172.20.1.254
+
+    # ---- Services sur leaf3 : web3 + samba/AD ----
+    web3:
+      kind: linux
+      image: nginx:alpine
+      exec:
+        - ip addr add 172.20.1.12/24 dev eth1
+        - ip link set eth1 up
+        - ip route add default via 172.20.1.254
+        - "sh -c 'echo \"<h1>DC1 - Web3 - leaf3</h1>\" > /usr/share/nginx/html/index.html'"
+
+    samba:
+      kind: linux
+      image: dockurr/samba
+      env:
+        ACCOUNT_username: "admin"
+        ACCOUNT_password: "DevCloud2025!"
+        SHARE_name: "data"
+        SHARE_path: "/data"
+        SHARE_browseable: "yes"
+        SHARE_readonly: "no"
+      exec:
+        - ip addr add 172.20.1.30/24 dev eth1
+        - ip link set eth1 up
+        - ip route add default via 172.20.1.254
+
+  links:
+    # ---- Full mesh spine-leaf (underlay) ----
+    - endpoints: [spine1:eth1, leaf1:eth1]   # 172.16.0.0/31
+    - endpoints: [spine1:eth2, leaf2:eth1]   # 172.16.0.2/31
+    - endpoints: [spine1:eth3, leaf3:eth1]   # 172.16.0.4/31
+    - endpoints: [spine2:eth1, leaf1:eth2]   # 172.16.0.6/31
+    - endpoints: [spine2:eth2, leaf2:eth2]   # 172.16.0.8/31
+    - endpoints: [spine2:eth3, leaf3:eth2]   # 172.16.0.10/31
+    # ---- Services vers leafs (overlay L2 via br10100) ----
+    - endpoints: [leaf1:eth3, web1:eth1]
+    - endpoints: [leaf1:eth4, dns1:eth1]
+    - endpoints: [leaf2:eth3, web2:eth1]
+    - endpoints: [leaf2:eth4, dns2:eth1]
+    - endpoints: [leaf3:eth3, web3:eth1]
+    - endpoints: [leaf3:eth4, samba:eth1]
