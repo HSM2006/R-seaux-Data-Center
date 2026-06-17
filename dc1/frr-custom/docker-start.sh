@@ -12,7 +12,11 @@ sysctl -w net.ipv4.ip_forward=1 >/dev/null 2>&1 || echo 1 > /proc/sys/net/ipv4/i
 # Config intégrée : vtysh -b lit /etc/frr/frr.conf (bind-monté) et l'applique à tous les daemons
 echo 'service integrated-vtysh-config' > /etc/frr/vtysh.conf
 
-# Démarrage des daemons (ordre : zebra d'abord)
+# Démarrage des daemons (ordre : mgmtd -> zebra -> reste)
+# mgmtd est OBLIGATOIRE en FRR 10.x : gère les IPs des interfaces via zebra
+# Sans lui, toutes les "ip address" sont silencieusement ignorées !
+/usr/lib/frr/mgmtd   -d -A 127.0.0.1
+sleep 1
 /usr/lib/frr/zebra   -d -A 127.0.0.1 -s 90000000
 sleep 1
 /usr/lib/frr/staticd -d -A 127.0.0.1
