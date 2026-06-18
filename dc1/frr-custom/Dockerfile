@@ -1,5 +1,9 @@
 FROM debian:trixie-slim
 
+# Empecher Debian de demarrer les services pendant apt install
+# (sinon snmpd demarre et squatte le port 161 dans le container)
+RUN echo "exit 101" > /usr/sbin/policy-rc.d && chmod +x /usr/sbin/policy-rc.d
+
 RUN apt update && apt install -y \
     curl gnupg lsb-release \
     procps iproute2 iputils-ping tcpdump \
