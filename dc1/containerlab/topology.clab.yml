@@ -14,6 +14,7 @@ topology:
     spine1:
       kind: linux
       image: frrouting/frr:latest
+      mgmt-ipv4: 172.20.20.101
       cap-add: [NET_ADMIN, SYS_ADMIN]
       binds:
         - frr/daemons:/etc/frr/daemons
@@ -22,6 +23,7 @@ topology:
     spine2:
       kind: linux
       image: frrouting/frr:latest
+      mgmt-ipv4: 172.20.20.102
       cap-add: [NET_ADMIN, SYS_ADMIN]
       binds:
         - frr/daemons:/etc/frr/daemons
@@ -31,6 +33,7 @@ topology:
     leaf1:
       kind: linux
       image: frrouting/frr:latest
+      mgmt-ipv4: 172.20.20.11
       cap-add: [NET_ADMIN, SYS_ADMIN]
       binds:
         - frr/daemons:/etc/frr/daemons
@@ -39,6 +42,7 @@ topology:
     leaf2:
       kind: linux
       image: frrouting/frr:latest
+      mgmt-ipv4: 172.20.20.12
       cap-add: [NET_ADMIN, SYS_ADMIN]
       binds:
         - frr/daemons:/etc/frr/daemons
@@ -47,6 +51,7 @@ topology:
     leaf3:
       kind: linux
       image: frrouting/frr:latest
+      mgmt-ipv4: 172.20.20.13
       cap-add: [NET_ADMIN, SYS_ADMIN]
       binds:
         - frr/daemons:/etc/frr/daemons
