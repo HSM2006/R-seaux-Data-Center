@@ -9,12 +9,18 @@ chown -R frr:frr /var/run/frr 2>/dev/null || true
 # IP forwarding — INDISPENSABLE : les spines routent le transport VXLAN underlay
 sysctl -w net.ipv4.ip_forward=1 >/dev/null 2>&1 || echo 1 > /proc/sys/net/ipv4/ip_forward 2>/dev/null || true
 
-# ---- SNMP : tuer l'auto-demarre Debian puis relancer avec notre conf ----
+# ---- SNMP : port 10161 ----
+# Le port 161 (privilegie, <1024) est refuse dans le netns des conteneurs
+# containerlab. On ecoute donc sur 10161.
+# On retire 'agentaddress' de la conf et on force le port en ligne de commande
+# (immunise contre un bind-mount de conf perime). '-C' = ne pas lire les confs
+# par defaut (evite que le 161 d'une vieille conf soit tente et fasse planter).
 killall -9 snmpd 2>/dev/null || true
 sleep 1
-mkdir -p /etc/snmp /var/lib/snmp /var/agentx
-if [ -f /etc/snmp/snmpd.conf ] && command -v snmpd >/dev/null 2>&1; then
-  /usr/sbin/snmpd -Lf /var/log/snmpd.log -c /etc/snmp/snmpd.conf
+mkdir -p /var/lib/snmp /var/agentx
+if command -v snmpd >/dev/null 2>&1; then
+  grep -v '^agentaddress' /etc/snmp/snmpd.conf > /run/snmpd.conf 2>/dev/null || cp /etc/snmp/snmpd.conf /run/snmpd.conf 2>/dev/null
+  /usr/sbin/snmpd -Lf /var/log/snmpd.log -C -c /run/snmpd.conf udp:0.0.0.0:10161
   sleep 1
 fi
 
