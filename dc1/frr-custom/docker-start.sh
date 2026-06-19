@@ -29,7 +29,7 @@ echo 'service integrated-vtysh-config' > /etc/frr/vtysh.conf
 
 # Option -M snmp : si le module frr-snmp est installe, expose BGP4-MIB via AgentX
 SNMP_OPT=""
-[ -f /usr/lib/frr/modules/bgpd_snmp.so ] && SNMP_OPT="-M snmp"
+[ -n "$(find /usr/lib -name bgpd_snmp.so 2>/dev/null)" ] && SNMP_OPT="-M snmp"
 
 # Démarrage des daemons (ordre : mgmtd -> zebra -> reste)
 # mgmtd est OBLIGATOIRE en FRR 10.x : gère les IPs des interfaces via zebra

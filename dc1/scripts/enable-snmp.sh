@@ -40,7 +40,7 @@ for NODE in "${NODES[@]}"; do
   fi
 
   # 2. (Re)activer l'AgentX FRR (BGP4-MIB) si le module est present
-  if dexec "$C" "[ -f /usr/lib/frr/modules/bgpd_snmp.so ]"; then
+  if dexec "$C" "find /usr/lib -name bgpd_snmp.so -quit 2>/dev/null | grep -q ."; then
     dexec "$C" "
       killall -9 zebra bgpd ospfd staticd 2>/dev/null || true; sleep 1
       /usr/lib/frr/zebra   -d -A 127.0.0.1 -s 90000000 -M snmp
