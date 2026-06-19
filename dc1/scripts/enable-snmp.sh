@@ -29,6 +29,7 @@ for NODE in "${NODES[@]}"; do
     mkdir -p /var/lib/snmp /var/agentx
     grep -v '^agentaddress' /etc/snmp/snmpd.conf > /run/snmpd.conf 2>/dev/null || cp /etc/snmp/snmpd.conf /run/snmpd.conf
     /usr/sbin/snmpd -Lf /var/log/snmpd.log -C -c /run/snmpd.conf udp:0.0.0.0:${PORT}
+    chmod 777 /var/agentx/master 2>/dev/null || true
   "
   sleep 1
   if dexec "$C" "pgrep -x snmpd >/dev/null"; then
@@ -40,7 +41,7 @@ for NODE in "${NODES[@]}"; do
   fi
 
   # 2. (Re)activer l'AgentX FRR (BGP4-MIB) si le module est present
-  if dexec "$C" "find /usr/lib -name bgpd_snmp.so -quit 2>/dev/null | grep -q ."; then
+  if dexec "$C" "test -n "$(find /usr/lib -name bgpd_snmp.so 2>/dev/null)""; then
     dexec "$C" "
       killall -9 zebra bgpd ospfd staticd 2>/dev/null || true; sleep 1
       /usr/lib/frr/zebra   -d -A 127.0.0.1 -s 90000000 -M snmp

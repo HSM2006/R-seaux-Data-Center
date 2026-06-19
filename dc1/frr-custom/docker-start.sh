@@ -22,6 +22,7 @@ if command -v snmpd >/dev/null 2>&1; then
   grep -v '^agentaddress' /etc/snmp/snmpd.conf > /run/snmpd.conf 2>/dev/null || cp /etc/snmp/snmpd.conf /run/snmpd.conf 2>/dev/null
   /usr/sbin/snmpd -Lf /var/log/snmpd.log -C -c /run/snmpd.conf udp:0.0.0.0:10161
   sleep 1
+  chmod 777 /var/agentx/master 2>/dev/null || true
 fi
 
 # Config intégrée : vtysh -b lit /etc/frr/frr.conf (bind-monté) et l'applique à tous les daemons
