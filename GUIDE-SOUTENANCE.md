@@ -282,3 +282,36 @@ Inclut FRR + snmpd + iperf3 + frr-snmp. Le script de démarrage gère tout
 8. `test-dns-ha.sh` → DNS haute dispo (section 4)
 9. Montrer le Dockerfile + docker-start.sh → image custom (section 11)
 10. Git log → commits progressifs (section 10)
+
+---
+
+## Note technique : third-party next-hop (Catalyst)
+
+En regardant les routes annoncées par le Catalyst (`show ip bgp neighbors X
+advertised-routes`), le next-hop de `172.20.1.0/24` affiche `10.202.0.60`
+(notre VM) au lieu de `10.202.1.12` (le Catalyst lui-même).
+
+**Pourquoi ?** C'est le mécanisme Cisco **third-party next-hop**. Quand :
+- le Catalyst annonce une route en eBGP à un voisin (ex: 10.202.8.253)
+- et que le next-hop de cette route (10.202.0.60, notre VM) est sur le
+  **même réseau L2** que ce voisin (tous sur 10.202.0.0/16 via GigE2)
+
+...alors Cisco ne réécrit pas le next-hop. Il se dit : "le voisin peut joindre
+la VM directement sans passer par moi, un hop inutile de moins". Ni
+`next-hop-self all` ni `route-map set ip next-hop` ne changent ce
+comportement pour les routes localement originées sur IOS-XE 17.6.
+
+**Est-ce un problème ?** Non :
+- Le Catalyst reste le **border router sur le control plane BGP** : c'est lui
+  qui décide quelles routes annoncer, filtrer, et recevoir.
+- Le data plane passe directement vers la VM, ce qui est en fait une
+  **optimisation** (chemin le plus court sur le même L2).
+- Les services sont joignables depuis les autres groupes (vérifié par ping
+  et curl).
+
+**Réponse à préparer si le prof demande :**
+"Le Catalyst est notre border router BGP. Le next-hop pointe vers notre VM
+parce qu'elle est sur le même réseau L2 que les peers eBGP — c'est le
+mécanisme third-party next-hop de Cisco qui évite un hop inutile.
+Le trafic arrive bien à nos services. Le Catalyst reste le point de contrôle
+pour l'annonce et le filtrage des routes."
