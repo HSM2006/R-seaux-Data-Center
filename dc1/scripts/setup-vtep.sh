@@ -56,7 +56,15 @@ for LEAF in leaf1 leaf2 leaf3; do
   done
 done
 
+# ---- IP sur leaf1 br10100 pour injection BGP de 172.20.1.0/24 ----
+# FRR sur leaf1 a `network 172.20.1.0/24` — il faut une route connected
+# dans le RIB pour que le network statement soit actif.
+echo "==> IP 172.20.1.253/24 sur leaf1 br10100 (pour annonce BGP)"
+dexec "${PREFIX}-leaf1" "ip addr add 172.20.1.253/24 dev $BRIDGE 2>/dev/null || true"
+
 # ---- Connexion du host VM au fabric (gateway services) ----
+# Le veth-host reste pour la default route des containers (accès internet).
+# Le trafic ENTRANT passe maintenant par les spines (macvlan → eBGP).
 echo "==> veth host -> $BRIDGE sur leaf1 (gateway 172.20.1.254)"
 L1="${PREFIX}-leaf1"
 ip link del veth-host 2>/dev/null || true
