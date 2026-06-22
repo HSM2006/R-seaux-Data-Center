@@ -7,18 +7,17 @@
 # Gateway fabric      : 172.20.1.254/24 (veth-host sur br10100 de leaf1)
 #
 # IMPORTANT — mgmt-ipv4 épinglées :
-# Sans le bloc `mgmt:` + `mgmt-ipv4:` ci-dessous, Containerlab assigne
-# les IPs de management dans un ordre non déterministe à chaque
-# `clab deploy` (vu en pratique : leaf1 a pris .3 au lieu de .11).
+# Sans `mgmt-ipv4:` ci-dessous, Containerlab assigne les IPs de
+# management dans un ordre non déterministe à chaque `clab deploy`
+# (vu en pratique : leaf1 a pris .3 au lieu de .11). On épingle donc
+# une IP fixe par nœud, SANS déclarer de bloc `mgmt:` séparé — ça
+# reste sur le réseau Docker partagé `clab` (172.20.20.0/24) déjà
+# utilisé par tous les labs sur cette VM, pas de réseau dédié à créer.
 # Tous les fichiers de conf (prometheus.yml, oxidized/router.db,
 # gnmic.yml, check-telemetry.sh, GUIDE-SOUTENANCE.md) supposent ces
 # IPs fixes : leaf1=.11 leaf2=.12 leaf3=.13 spine1=.101 spine2=.102.
 # ============================================================
 name: dc1-evpn
-
-mgmt:
-  network: dc1-mgmt
-  ipv4-subnet: 172.20.20.0/24
 
 topology:
   nodes:
