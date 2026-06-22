@@ -14,53 +14,43 @@ topology:
     spine1:
       kind: linux
       image: frrouting/frr:latest
-      mgmt-ipv4: 172.20.20.101
       cap-add: [NET_ADMIN, SYS_ADMIN]
       binds:
         - frr/daemons:/etc/frr/daemons
         - frr/bgp/spine1.conf:/etc/frr/frr.conf
-        - ../services/snmp/snmpd.conf:/etc/snmp/snmpd.conf
 
     spine2:
       kind: linux
       image: frrouting/frr:latest
-      mgmt-ipv4: 172.20.20.102
       cap-add: [NET_ADMIN, SYS_ADMIN]
       binds:
         - frr/daemons:/etc/frr/daemons
         - frr/bgp/spine2.conf:/etc/frr/frr.conf
-        - ../services/snmp/snmpd.conf:/etc/snmp/snmpd.conf
 
     # ---- Leafs (VTEPs VXLAN) ----
     leaf1:
       kind: linux
       image: frrouting/frr:latest
-      mgmt-ipv4: 172.20.20.11
       cap-add: [NET_ADMIN, SYS_ADMIN]
       binds:
         - frr/daemons:/etc/frr/daemons
         - frr/bgp/leaf1.conf:/etc/frr/frr.conf
-        - ../services/snmp/snmpd.conf:/etc/snmp/snmpd.conf
 
     leaf2:
       kind: linux
       image: frrouting/frr:latest
-      mgmt-ipv4: 172.20.20.12
       cap-add: [NET_ADMIN, SYS_ADMIN]
       binds:
         - frr/daemons:/etc/frr/daemons
         - frr/bgp/leaf2.conf:/etc/frr/frr.conf
-        - ../services/snmp/snmpd.conf:/etc/snmp/snmpd.conf
 
     leaf3:
       kind: linux
       image: frrouting/frr:latest
-      mgmt-ipv4: 172.20.20.13
       cap-add: [NET_ADMIN, SYS_ADMIN]
       binds:
         - frr/daemons:/etc/frr/daemons
         - frr/bgp/leaf3.conf:/etc/frr/frr.conf
-        - ../services/snmp/snmpd.conf:/etc/snmp/snmpd.conf
 
     # ---- Services sur leaf1 : web1 + dns1 ----
     web1:
@@ -74,14 +64,7 @@ topology:
 
     dns1:
       kind: linux
-      image: alpine:latest
-      binds:
-        - ../services/unbound/unbound.conf:/etc/unbound/unbound.conf
-      # unbound en boucle de supervision (PID 1) : survit a un crash ET a un
-      # 'docker restart' (apk reste en cache apres la 1re install).
-      cmd: >
-        sh -c "command -v unbound >/dev/null 2>&1 || apk add --no-cache unbound >/dev/null 2>&1;
-        while true; do unbound -d -c /etc/unbound/unbound.conf; sleep 2; done"
+      image: dc1-dns:latest
       exec:
         - ip addr add 172.20.1.20/24 dev eth1
         - ip link set eth1 up
@@ -99,14 +82,7 @@ topology:
 
     dns2:
       kind: linux
-      image: alpine:latest
-      binds:
-        - ../services/unbound/unbound.conf:/etc/unbound/unbound.conf
-      # unbound en boucle de supervision (PID 1) : survit a un crash ET a un
-      # 'docker restart' (apk reste en cache apres la 1re install).
-      cmd: >
-        sh -c "command -v unbound >/dev/null 2>&1 || apk add --no-cache unbound >/dev/null 2>&1;
-        while true; do unbound -d -c /etc/unbound/unbound.conf; sleep 2; done"
+      image: dc1-dns:latest
       exec:
         - ip addr add 172.20.1.21/24 dev eth1
         - ip link set eth1 up
