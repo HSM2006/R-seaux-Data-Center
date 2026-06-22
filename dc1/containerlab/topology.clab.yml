@@ -18,6 +18,7 @@ topology:
       binds:
         - frr/daemons:/etc/frr/daemons
         - frr/bgp/spine1.conf:/etc/frr/frr.conf
+        - ../services/snmp/snmpd.conf:/etc/snmp/snmpd.conf
 
     spine2:
       kind: linux
@@ -26,6 +27,7 @@ topology:
       binds:
         - frr/daemons:/etc/frr/daemons
         - frr/bgp/spine2.conf:/etc/frr/frr.conf
+        - ../services/snmp/snmpd.conf:/etc/snmp/snmpd.conf
 
     # ---- Leafs (VTEPs VXLAN) ----
     leaf1:
@@ -35,6 +37,7 @@ topology:
       binds:
         - frr/daemons:/etc/frr/daemons
         - frr/bgp/leaf1.conf:/etc/frr/frr.conf
+        - ../services/snmp/snmpd.conf:/etc/snmp/snmpd.conf
 
     leaf2:
       kind: linux
@@ -43,6 +46,7 @@ topology:
       binds:
         - frr/daemons:/etc/frr/daemons
         - frr/bgp/leaf2.conf:/etc/frr/frr.conf
+        - ../services/snmp/snmpd.conf:/etc/snmp/snmpd.conf
 
     leaf3:
       kind: linux
@@ -51,6 +55,7 @@ topology:
       binds:
         - frr/daemons:/etc/frr/daemons
         - frr/bgp/leaf3.conf:/etc/frr/frr.conf
+        - ../services/snmp/snmpd.conf:/etc/snmp/snmpd.conf
 
     # ---- Services sur leaf1 : web1 + dns1 ----
     web1:

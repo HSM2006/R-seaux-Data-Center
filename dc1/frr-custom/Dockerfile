@@ -27,6 +27,10 @@ RUN sed -i 's/^bgpd=no/bgpd=yes/'   /etc/frr/daemons && \
     sed -i 's/^bfdd=no/bfdd=yes/'   /etc/frr/daemons && \
     echo 'service integrated-vtysh-config' > /etc/frr/vtysh.conf
 
+# snmpd.conf custom : rocommunity public SANS restriction de vue (-V systemonly)
+# Le défaut Debian ne donne accès qu'au system MIB → IF-MIB et BGP4-MIB vides
+COPY snmpd.conf /etc/snmp/snmpd.conf
+
 # Entrypoint qui démarre FRR proprement (sans watchfrr) + ip_forward
 COPY docker-start.sh /usr/lib/frr/docker-start.sh
 RUN chmod +x /usr/lib/frr/docker-start.sh

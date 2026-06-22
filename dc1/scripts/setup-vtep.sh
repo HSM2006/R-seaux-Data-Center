@@ -68,13 +68,21 @@ dexec "${PREFIX}-leaf1" "ip addr add 172.20.1.253/24 dev $BRIDGE 2>/dev/null || 
 echo "==> veth host -> $BRIDGE sur leaf1 (gateway 172.20.1.254)"
 L1="${PREFIX}-leaf1"
 ip link del veth-host 2>/dev/null || true
+ip link del br-svc 2>/dev/null || true
 ip link add veth-host type veth peer name veth-leaf
 PID=$(docker inspect -f '{{.State.Pid}}' "$L1")
 ip link set veth-leaf netns "$PID"
 docker exec "$L1" ip link set veth-leaf up
 docker exec "$L1" ip link set veth-leaf master "$BRIDGE"
+
+# Bridge côté host (br-svc) : les docker-compose services/nautobot
+# utilisent macvlan sur br-svc pour obtenir des IPs en 172.20.1.0/24.
+# Sans ce bridge, macvlan sur veth-host ne marche pas de façon fiable.
+ip link add br-svc type bridge
+ip link set br-svc up
 ip link set veth-host up
-ip addr add 172.20.1.254/24 dev veth-host 2>/dev/null || true
+ip link set veth-host master br-svc
+ip addr add 172.20.1.254/24 dev br-svc 2>/dev/null || true
 
 echo ""
 echo "=== VTEP setup terminé : VNI $VNI, services 172.20.1.0/24, gw 172.20.1.254 ==="
