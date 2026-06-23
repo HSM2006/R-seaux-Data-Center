@@ -47,7 +47,7 @@ services:
     image: oxidized/oxidized:latest
     container_name: dc1-oxidized
     volumes:
-      - ./oxidized/config:/home/oxidized/.config/oxidized/config
+      - ./oxidized/config.local:/home/oxidized/.config/oxidized/config
       - ./oxidized/router.db:/home/oxidized/.config/oxidized/router.db
       - oxidized-data:/home/oxidized/.config/oxidized
     networks:

@@ -5,3 +5,4 @@ __pycache__/
 *.log
 clab-*
 .topology.clab.yml.bak
+dc1/services/oxidized/config.local

@@ -40,7 +40,20 @@ hooks:
   push_to_git:
     type: githubrepo
     events: [post_store]
-    remote_repo: https://Houssam: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@github.com/HSM2006/R-seaux-Data-Center.git
+    remote_repo: https://Houssam:TON_TOKEN_GITHUB_ICI@github.com/HSM2006/R-seaux-Data-Center.git
     remote_branch: configs-backup
     username: Houssam
-    password: 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
+    password: TON_TOKEN_GITHUB_ICI
+# ------------------------------------------------------------------
+# SECURITE : ce fichier est versionne dans Git, donc PAS de vrai token
+# ici (un ancien token avait été commité par erreur et reste visible
+# dans l'historique Git — il DOIT être révoqué côté GitHub :
+# Settings > Developer settings > Personal access tokens > Delete).
+#
+# Le fichier réellement utilisé par le container est
+# dc1/services/oxidized/config.local (mêmes lignes, avec le vrai
+# token), volontairement absent du repo (.gitignore) et bind-monté à
+# la place de celui-ci dans docker-compose.yml. Pour le recréer sur la
+# VM : cp config config.local, puis remplacer TON_TOKEN_GITHUB_ICI par
+# le token réel (scope "repo" uniquement, jamais "admin" ou "delete_repo").
+# ------------------------------------------------------------------

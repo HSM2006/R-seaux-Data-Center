@@ -4,7 +4,16 @@
 # Adressage services : 172.20.1.0/24
 # Underlay            : 172.16.0.0/24 (P2P /31) + 172.16.255.x/32 (loopbacks)
 # Overlay EVPN        : VNI 10100
-# Gateway fabric      : 172.20.1.254/24 (veth-host sur br10100 de leaf1)
+# Gateway des CONTAINERS DE SERVICE : 172.20.1.253/24 (IP sur br10100 de
+#   leaf1, routee par FRR/BGP). C'est elle qu'il faut utiliser en default
+#   route dans web1/2/3, dns1/2, samba — sinon la reponse sort par
+#   veth-host -> VM -> ens18 alors que la requete est entree par
+#   Catalyst -> spine -> leaf : routage asymetrique, rejete par l'autre
+#   groupe (uRPF / ARP qui ne resout pas). Vu en pratique le 23/06 :
+#   ping externe KO avec .254, OK avec .253.
+# Gateway de la VM elle-meme (pas des containers) : 172.20.1.254/24
+#   (veth-host sur br10100 de leaf1) — sert uniquement a ce que la VM
+#   hote (root netns) atteigne le fabric, ne pas y toucher.
 #
 # IMPORTANT — mgmt-ipv4 épinglées :
 # Sans `mgmt-ipv4:` ci-dessous, Containerlab assigne les IPs de
@@ -80,7 +89,7 @@ topology:
       exec:
         - ip addr add 172.20.1.10/24 dev eth1
         - ip link set eth1 up
-        - ip route replace default via 172.20.1.254
+        - ip route replace default via 172.20.1.253
         - "sh -c 'echo \"<h1>DC1 - Web1 - leaf1</h1>\" > /usr/share/nginx/html/index.html'"
 
     dns1:
@@ -89,7 +98,7 @@ topology:
       exec:
         - ip addr add 172.20.1.20/24 dev eth1
         - ip link set eth1 up
-        - ip route replace default via 172.20.1.254
+        - ip route replace default via 172.20.1.253
 
     # ---- Services sur leaf2 : web2 + dns2 (HA) ----
     web2:
@@ -98,7 +107,7 @@ topology:
       exec:
         - ip addr add 172.20.1.11/24 dev eth1
         - ip link set eth1 up
-        - ip route replace default via 172.20.1.254
+        - ip route replace default via 172.20.1.253
         - "sh -c 'echo \"<h1>DC1 - Web2 - leaf2</h1>\" > /usr/share/nginx/html/index.html'"
 
     dns2:
@@ -107,7 +116,7 @@ topology:
       exec:
         - ip addr add 172.20.1.21/24 dev eth1
         - ip link set eth1 up
-        - ip route replace default via 172.20.1.254
+        - ip route replace default via 172.20.1.253
 
     # ---- Services sur leaf3 : web3 + samba/AD ----
     web3:
@@ -116,7 +125,7 @@ topology:
       exec:
         - ip addr add 172.20.1.12/24 dev eth1
         - ip link set eth1 up
-        - ip route replace default via 172.20.1.254
+        - ip route replace default via 172.20.1.253
         - "sh -c 'echo \"<h1>DC1 - Web3 - leaf3</h1>\" > /usr/share/nginx/html/index.html'"
 
     samba:
@@ -125,7 +134,7 @@ topology:
       exec:
         - ip addr add 172.20.1.30/24 dev eth1
         - ip link set eth1 up
-        - ip route replace default via 172.20.1.254
+        - ip route replace default via 172.20.1.253
 
   links:
     # ---- Full mesh spine-leaf (underlay) ----
