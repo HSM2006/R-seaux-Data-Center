@@ -1,0 +1,29 @@
+
+IPv4 Unicast Summary:
+BGP router identifier 10.255.0.254, local AS number 65001 VRF default vrf-id 0
+BGP table version 2872
+RIB entries 136, using 20 KiB of memory
+Peers 5, using 83 KiB of memory
+
+Neighbor             V         AS   MsgRcvd   MsgSent   TblVer  InQ OutQ  Up/Down State/PfxRcd   PfxSnt Desc
+leaf1(10.255.0.1)    4      65001     18421     19519     2872    0    0 15:17:49            2       72 leaf1
+leaf2(10.255.0.2)    4      65001     18409     19519     2872    0    0 15:17:49            1       72 leaf2
+leaf3(10.255.0.3)    4      65001     18415     19519     2872    0    0 15:17:49            1       72 leaf3
+spine2(10.255.0.253) 4      65001     18461     19491     2872    0    0 15:17:49            5       72 spine2
+25.25.25.25          4      65001     18780     19168     2872    0    0 02:17:23           66       72 r1
+
+Total number of neighbors 5
+
+L2VPN EVPN Summary:
+BGP router identifier 10.255.0.254, local AS number 65001 VRF default vrf-id 0
+BGP table version 0
+RIB entries 5, using 760 bytes of memory
+Peers 4, using 66 KiB of memory
+
+Neighbor             V         AS   MsgRcvd   MsgSent   TblVer  InQ OutQ  Up/Down State/PfxRcd   PfxSnt Desc
+leaf1(10.255.0.1)    4      65001     18421     19519       92    0    0 15:17:49            2        4 leaf1
+leaf2(10.255.0.2)    4      65001     18409     19519       92    0    0 15:17:49            1        4 leaf2
+leaf3(10.255.0.3)    4      65001     18415     19519       92    0    0 15:17:49            1        4 leaf3
+spine2(10.255.0.253) 4      65001     18461     19491       90    0    0 15:17:49            4        4 spine2
+
+Total number of neighbors 4

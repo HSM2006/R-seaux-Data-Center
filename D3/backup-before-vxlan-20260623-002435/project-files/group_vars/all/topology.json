@@ -1,0 +1,334 @@
+{
+  "netlab_provider": "clab",
+  "netlab_name": "devcloudevpn",
+  "hosts": {
+    "annuaire": {
+      "ipv4": [
+        "10.25.0.26"
+      ]
+    },
+    "dns1": {
+      "ipv4": [
+        "10.25.0.27"
+      ]
+    },
+    "leaf1": {
+      "loopback": [
+        "10.255.0.1"
+      ],
+      "ipv4": [
+        "10.255.0.1",
+        "10.25.0.1",
+        "10.25.0.5"
+      ]
+    },
+    "leaf2": {
+      "loopback": [
+        "10.255.0.2"
+      ],
+      "ipv4": [
+        "10.255.0.2",
+        "10.25.0.9",
+        "10.25.0.13"
+      ]
+    },
+    "leaf3": {
+      "loopback": [
+        "10.255.0.3"
+      ],
+      "ipv4": [
+        "10.255.0.3",
+        "10.25.0.17",
+        "10.25.0.21"
+      ]
+    },
+    "spine1": {
+      "loopback": [
+        "10.255.0.254"
+      ],
+      "ipv4": [
+        "10.255.0.254",
+        "10.25.0.2",
+        "10.25.0.10",
+        "10.25.0.18",
+        "172.7.0.3"
+      ]
+    },
+    "spine2": {
+      "loopback": [
+        "10.255.0.253"
+      ],
+      "ipv4": [
+        "10.255.0.253",
+        "10.25.0.6",
+        "10.25.0.14",
+        "10.25.0.22"
+      ]
+    },
+    "web1": {
+      "ipv4": [
+        "10.25.0.25"
+      ]
+    },
+    "web2": {
+      "ipv4": [
+        "10.25.0.28"
+      ]
+    }
+  },
+  "netlab_hosts": {
+    "annuaire": {
+      "ipv4": [
+        "10.25.0.26"
+      ]
+    },
+    "dns1": {
+      "ipv4": [
+        "10.25.0.27"
+      ]
+    },
+    "leaf1": {
+      "loopback": [
+        "10.255.0.1"
+      ],
+      "ipv4": [
+        "10.255.0.1",
+        "10.25.0.1",
+        "10.25.0.5"
+      ]
+    },
+    "leaf2": {
+      "loopback": [
+        "10.255.0.2"
+      ],
+      "ipv4": [
+        "10.255.0.2",
+        "10.25.0.9",
+        "10.25.0.13"
+      ]
+    },
+    "leaf3": {
+      "loopback": [
+        "10.255.0.3"
+      ],
+      "ipv4": [
+        "10.255.0.3",
+        "10.25.0.17",
+        "10.25.0.21"
+      ]
+    },
+    "spine1": {
+      "loopback": [
+        "10.255.0.254"
+      ],
+      "ipv4": [
+        "10.255.0.254",
+        "10.25.0.2",
+        "10.25.0.10",
+        "10.25.0.18",
+        "172.7.0.3"
+      ]
+    },
+    "spine2": {
+      "loopback": [
+        "10.255.0.253"
+      ],
+      "ipv4": [
+        "10.255.0.253",
+        "10.25.0.6",
+        "10.25.0.14",
+        "10.25.0.22"
+      ]
+    },
+    "web1": {
+      "ipv4": [
+        "10.25.0.25"
+      ]
+    },
+    "web2": {
+      "ipv4": [
+        "10.25.0.28"
+      ]
+    }
+  },
+  "paths_validate": [
+    "/root/.pyenv/versions/3.11.11/envs/netlab/lib/python3.11/site-packages/netsim/validate"
+  ],
+  "paths_plugin": [
+    "/root/SAE_devCloud_D01",
+    "/root/.netlab",
+    "/root/.pyenv/versions/3.11.11/envs/netlab/lib/python3.11/site-packages/netsim/extra"
+  ],
+  "paths_custom": {
+    "dirs": [
+      "/root/SAE_devCloud_D01",
+      "/root/.netlab",
+      "/root/.pyenv/versions/3.11.11/envs/netlab/lib/python3.11/site-packages/netsim/extra"
+    ],
+    "files": [
+      "{{custom_config}}/{{inventory_hostname}}.{{netlab_device_type}}-{{node_provider}}.j2",
+      "{{custom_config}}/{{inventory_hostname}}.{{netlab_device_type}}.j2",
+      "{{custom_config}}/{{inventory_hostname}}.j2",
+      "{{custom_config}}/{{inventory_hostname}}.cfg",
+      "{{custom_config}}/{{netlab_device_type}}-{{node_provider}}.j2",
+      "{{custom_config}}/{{netlab_device_type}}.j2",
+      "{{custom_config}}/{{ansible_network_os}}-{{node_provider}}.j2",
+      "{{custom_config}}/{{ansible_network_os}}.j2",
+      "{{custom_config}}.{{inventory_hostname}}.{{netlab_device_type}}.j2",
+      "{{custom_config}}.{{inventory_hostname}}.{{ansible_network_os}}.j2",
+      "{{custom_config}}.{{inventory_hostname}}.j2",
+      "{{custom_config}}.{{netlab_device_type}}.j2",
+      "{{custom_config}}.{{ansible_network_os}}.j2",
+      "{{custom_config}}.j2"
+    ],
+    "tasks": [
+      "{{ custom_config }}/deploy-{{ inventory_hostname }}.yml",
+      "{{ custom_config }}/deploy.{{ netlab_device_type }}-{{ node_provider }}.yml",
+      "{{ custom_config }}/deploy.{{ netlab_device_type }}.yml",
+      "{{ custom_config }}/deploy.{{ ansible_network_os }}-{{ node_provider }}.yml",
+      "{{ custom_config }}/deploy.{{ ansible_network_os }}.yml",
+      "{{ custom_config }}/deploy.yml"
+    ],
+    "f_files": [
+      "{custom_config}/{inventory_hostname}.{netlab_device_type}-{node_provider}.j2",
+      "{custom_config}/{inventory_hostname}.{netlab_device_type}.j2",
+      "{custom_config}/{inventory_hostname}.j2",
+      "{custom_config}/{inventory_hostname}.cfg",
+      "{custom_config}/{netlab_device_type}-{node_provider}.j2",
+      "{custom_config}/{netlab_device_type}.j2",
+      "{custom_config}/{ansible_network_os}-{node_provider}.j2",
+      "{custom_config}/{ansible_network_os}.j2",
+      "{custom_config}.{inventory_hostname}.{netlab_device_type}.j2",
+      "{custom_config}.{inventory_hostname}.{ansible_network_os}.j2",
+      "{custom_config}.{inventory_hostname}.j2",
+      "{custom_config}.{netlab_device_type}.j2",
+      "{custom_config}.{ansible_network_os}.j2",
+      "{custom_config}.j2"
+    ],
+    "f_tasks": [
+      "{ custom_config }/deploy-{ inventory_hostname }.yml",
+      "{ custom_config }/deploy.{ netlab_device_type }-{ node_provider }.yml",
+      "{ custom_config }/deploy.{ netlab_device_type }.yml",
+      "{ custom_config }/deploy.{ ansible_network_os }-{ node_provider }.yml",
+      "{ custom_config }/deploy.{ ansible_network_os }.yml",
+      "{ custom_config }/deploy.yml"
+    ]
+  },
+  "paths_deploy": {
+    "dirs": [
+      "/root/.pyenv/versions/3.11.11/envs/netlab/lib/python3.11/site-packages/netsim/ansible/tasks"
+    ],
+    "tasks_generic": [
+      "deploy-config/{{ netlab_device_type }}-{{ node_provider }}.yml",
+      "deploy-config/{{ netlab_device_type }}.yml",
+      "deploy-config/{{ ansible_network_os }}-{{ node_provider }}.yml",
+      "deploy-config/{{ ansible_network_os }}.yml"
+    ],
+    "files": [
+      "{{ netlab_device_type }}/{{ config_module }}-{{ node_provider }}.yml",
+      "{{ netlab_device_type }}/{{ config_module }}.yml",
+      "deploy-config/{{ netlab_device_type }}-{{ node_provider }}.yml",
+      "deploy-config/{{ netlab_device_type }}.yml",
+      "{{ ansible_network_os }}/{{ config_module }}-{{ node_provider }}.yml",
+      "{{ ansible_network_os }}/{{ config_module }}.yml",
+      "deploy-config/{{ ansible_network_os }}-{{ node_provider }}.yml",
+      "deploy-config/{{ ansible_network_os }}.yml"
+    ],
+    "f_tasks_generic": [
+      "deploy-config/{ netlab_device_type }-{ node_provider }.yml",
+      "deploy-config/{ netlab_device_type }.yml",
+      "deploy-config/{ ansible_network_os }-{ node_provider }.yml",
+      "deploy-config/{ ansible_network_os }.yml"
+    ],
+    "f_files": [
+      "{ netlab_device_type }/{ config_module }-{ node_provider }.yml",
+      "{ netlab_device_type }/{ config_module }.yml",
+      "deploy-config/{ netlab_device_type }-{ node_provider }.yml",
+      "deploy-config/{ netlab_device_type }.yml",
+      "{ ansible_network_os }/{ config_module }-{ node_provider }.yml",
+      "{ ansible_network_os }/{ config_module }.yml",
+      "deploy-config/{ ansible_network_os }-{ node_provider }.yml",
+      "deploy-config/{ ansible_network_os }.yml"
+    ]
+  },
+  "paths_templates": {
+    "dirs": [
+      "/root/.pyenv/versions/3.11.11/envs/netlab/lib/python3.11/site-packages/netsim/daemons",
+      "/root/.pyenv/versions/3.11.11/envs/netlab/lib/python3.11/site-packages/netsim/ansible/templates"
+    ]
+  },
+  "paths_t_files": {
+    "files": [
+      "{{config_module}}/{{netlab_device_type}}-{{node_provider}}.j2",
+      "{{config_module}}/{{netlab_device_type}}.j2",
+      "{{config_module}}.{{netlab_device_type}}.j2",
+      "{{config_module}}/{{ansible_network_os}}-{{node_provider}}.j2",
+      "{{config_module}}/{{ansible_network_os}}.j2",
+      "{{config_module}}.{{ansible_network_os}}.j2",
+      "{{netlab_device_type}}/{{config_module}}.j2"
+    ],
+    "f_files": [
+      "{config_module}/{netlab_device_type}-{node_provider}.j2",
+      "{config_module}/{netlab_device_type}.j2",
+      "{config_module}.{netlab_device_type}.j2",
+      "{config_module}/{ansible_network_os}-{node_provider}.j2",
+      "{config_module}/{ansible_network_os}.j2",
+      "{config_module}.{ansible_network_os}.j2",
+      "{netlab_device_type}/{config_module}.j2"
+    ]
+  },
+  "paths_ready": {
+    "dirs": [
+      "/root/.pyenv/versions/3.11.11/envs/netlab/lib/python3.11/site-packages/netsim/ansible/tasks/readiness-check"
+    ],
+    "files": [
+      "{{netlab_device_type}}-{{node_provider}}.yml",
+      "{{netlab_device_type}}.yml",
+      "{{ansible_network_os}}-{{node_provider}}.yml",
+      "{{ansible_network_os}}.yml"
+    ],
+    "f_files": [
+      "{netlab_device_type}-{node_provider}.yml",
+      "{netlab_device_type}.yml",
+      "{ansible_network_os}-{node_provider}.yml",
+      "{ansible_network_os}.yml"
+    ]
+  },
+  "paths_collect": {
+    "dirs": [
+      "/root/.pyenv/versions/3.11.11/envs/netlab/lib/python3.11/site-packages/netsim/ansible/tasks/fetch-config"
+    ]
+  },
+  "paths_user_locations": [
+    "/root/SAE_devCloud_D01",
+    "/root/.netlab"
+  ],
+  "pools": {
+    "lan": {
+      "ipv4": "172.16.0.0/16",
+      "prefix": 24
+    },
+    "loopback": {
+      "ipv4": "10.255.0.0/24",
+      "prefix": 32
+    },
+    "p2p": {
+      "ipv4": "10.25.0.0/27",
+      "prefix": 30
+    },
+    "router_id": {
+      "ipv4": "10.255.0.0/24",
+      "prefix": 32
+    },
+    "mgmt": {
+      "ipv4": "192.168.121.0/24",
+      "start": 100,
+      "mac": "CA-FE-00-00-00-00",
+      "prefix": 24
+    },
+    "vrf_loopback": {
+      "ipv4": "10.2.0.0/24",
+      "prefix": 32
+    }
+  }
+}

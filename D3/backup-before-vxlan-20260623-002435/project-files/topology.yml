@@ -1,0 +1,192 @@
+# Topologie netlab/containerlab - Fabric Leaf-Spine FRR
+# Objectif: underlay OSPF + overlay EVPN/VxLAN L2 sans VRF.
+name: devcloudevpn
+
+provider: clab
+
+# Tous les equipements reseau sont des routeurs FRR.
+defaults:
+  device: frr
+  bgp:
+    as: 65001
+    rr_list: [ spine1, spine2 ]
+  evpn:
+    transport: vxlan
+  vxlan:
+    flooding: evpn
+    vlans: [ services ]
+
+# Modules demandes. Les groupes ci-dessous limitent les spines a OSPF/BGP/EVPN
+# et gardent VXLAN/VLAN uniquement sur les leafs VTEP.
+module: [ ospf, bgp, evpn, vxlan, vlan ]
+
+# Pools d'adressage:
+# - loopback: /32 dans 10.255.0.0/24
+# - p2p: liens Leaf-Spine en /30 dans 10.25.0.0/24
+addressing:
+  loopback:
+    ipv4: 10.255.0.0/24
+    prefix: 32
+  router_id:
+    ipv4: 10.255.0.0/24
+    prefix: 32
+  p2p:
+    ipv4: 10.25.0.0/27
+    prefix: 30
+
+# VLAN/VNI de services etendu en L2 par EVPN/VxLAN.
+# mode bridge => pas de passerelle SVI, pas de VRF.
+vlans:
+  services:
+    id: 10
+    vni: 1010
+    mode: bridge
+
+# Roles de la fabric.
+groups:
+  spines:
+    members: [ spine1, spine2 ]
+    module: [ ospf, bgp, evpn ]
+    bgp:
+      rr: true
+
+  leafs:
+    members: [ leaf1, leaf2, leaf3 ]
+    module: [ ospf, bgp, evpn, vxlan, vlan ]
+    vlans:
+      services: {}
+
+  services:
+    members: [ web1, annuaire, dns1, web2 ]
+    device: linux
+    module: [ vlan ]
+
+nodes:
+  # Spines: underlay OSPF + iBGP EVPN Route Reflector, pas VTEP.
+  spine1:
+    loopback:
+      ipv4: 10.255.0.254/32
+    ospf:
+      router_id: 10.255.0.254
+    bgp:
+      router_id: 10.255.0.254
+      rr_cluster_id: 10.255.0.254
+  spine2:
+    loopback:
+      ipv4: 10.255.0.253/32
+    ospf:
+      router_id: 10.255.0.253
+    bgp:
+      router_id: 10.255.0.253
+      rr_cluster_id: 10.255.0.253
+
+  # Leafs: VTEP EVPN/VxLAN, loopbacks annoncees dans OSPF.
+  leaf1:
+    loopback:
+      ipv4: 10.255.0.1/32
+    ospf:
+      router_id: 10.255.0.1
+    bgp:
+      router_id: 10.255.0.1
+  leaf2:
+    loopback:
+      ipv4: 10.255.0.2/32
+    ospf:
+      router_id: 10.255.0.2
+    bgp:
+      router_id: 10.255.0.2
+  leaf3:
+    loopback:
+      ipv4: 10.255.0.3/32
+    ospf:
+      router_id: 10.255.0.3
+    bgp:
+      router_id: 10.255.0.3
+
+  # Services Linux. Les IPs sont dans le /29 10.25.0.24/29.
+  web1:
+    clab:
+      image: devcloud-web:latest
+      cmd: sleep infinity
+      binds:
+        - services/web1/index.html:/www/index.html:ro
+      exec:
+        - sh -c "cd /www && python -m http.server 80 >/tmp/http.log 2>&1 &"
+  annuaire:
+    clab:
+      image: alpine:latest
+      cmd: sleep infinity
+  dns1:
+    clab:
+      image: devcloud-unbound:latest
+      binds:
+        - services/unbound/unbound.conf:/etc/unbound/unbound.conf:ro
+  web2:
+    clab:
+      image: devcloud-web:latest
+      cmd: sleep infinity
+      binds:
+        - services/web2/index.html:/www/index.html:ro
+      exec:
+        - sh -c "cd /www && python -m http.server 80 >/tmp/http.log 2>&1 &"
+
+links:
+  # Liens point-a-point Leaf-Spine en /30.
+  - leaf1:
+      ipv4: 10.25.0.1/30
+    spine1:
+      ipv4: 10.25.0.2/30
+
+  - leaf1:
+      ipv4: 10.25.0.5/30
+    spine2:
+      ipv4: 10.25.0.6/30
+
+  - leaf2:
+      ipv4: 10.25.0.9/30
+    spine1:
+      ipv4: 10.25.0.10/30
+
+  - leaf2:
+      ipv4: 10.25.0.13/30
+    spine2:
+      ipv4: 10.25.0.14/30
+
+  - leaf3:
+      ipv4: 10.25.0.17/30
+    spine1:
+      ipv4: 10.25.0.18/30
+
+  - leaf3:
+      ipv4: 10.25.0.21/30
+    spine2:
+      ipv4: 10.25.0.22/30
+
+  # Lien externe vers le reseau de l'hote via ens19.
+  # Containerlab utilise macvlan:ens19, car host:ens19 tente de creer
+  # une interface ens19 et echoue si cette interface existe deja.
+  - clab.uplink: ens19
+    spine1:
+      ipv4: 172.7.0.3/29
+      ospf.passive: true
+
+  # Acces services dans VLAN 10/VNI 1010.
+  - web1:
+      ipv4: 10.25.0.25/29
+    leaf1:
+      vlan.access: services
+
+  - annuaire:
+      ipv4: 10.25.0.26/29
+    leaf2:
+      vlan.access: services
+
+  - dns1:
+      ipv4: 10.25.0.27/29
+    leaf3:
+      vlan.access: services
+
+  - web2:
+      ipv4: 10.25.0.28/29
+    leaf3:
+      vlan.access: services

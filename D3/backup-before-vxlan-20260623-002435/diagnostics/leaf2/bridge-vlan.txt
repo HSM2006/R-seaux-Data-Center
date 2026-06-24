@@ -1,0 +1,4 @@
+port              vlan-id  
+eth3              1 PVID Egress Untagged
+vlan10            1 PVID Egress Untagged
+vxlan1010         1 PVID Egress Untagged

@@ -1,0 +1,31 @@
+#!/bin/bash
+#
+set -e # Exit immediately when any command fails
+#
+
+
+
+# Create L3 VNIs with bridges and add to correct vrf table
+
+# Create VXLAN L2 interface per vni
+ip link add vxlan1010 type vxlan \
+  id 1010 \
+  dstport 4789 \
+  local 10.255.0.2 nolearning
+#
+# Add it to the VLAN bridge (create if needed for l3 vnis); disable STP
+if [ ! -e /sys/devices/virtual/net/vlan10 ]; then
+ip link add vlan10 type bridge
+ip link set up dev vlan10
+fi
+ip link set dev vxlan1010 master vlan10
+ip link set vlan10 type bridge stp_state 0
+
+# Do not generate ipv6 link-local address for VXLAN devices
+ip link set mtu 1500 addrgenmode none dev vxlan1010
+# Disable dynamic MAC learning for evpn, see https://docs.frrouting.org/en/latest/evpn.html
+bridge link set dev vxlan1010 learning off
+ip link set up dev vxlan1010
+
+
+exit $?

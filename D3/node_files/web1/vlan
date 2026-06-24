@@ -1,0 +1,8 @@
+#!/bin/bash
+#
+set -e # Exit immediately when any command fails
+set -x # Track commands for troubleshooting
+#
+
+
+

@@ -1,0 +1,385 @@
+{
+  "vlans": {
+    "services": {
+      "id": 10,
+      "vni": 1010,
+      "mode": "bridge",
+      "prefix": {
+        "ipv4": "172.16.0.0/24",
+        "allocation": "id_based"
+      },
+      "evpn": {
+        "evi": 10,
+        "import": [
+          "65001:10"
+        ],
+        "export": [
+          "65001:10"
+        ],
+        "rd": "10.255.0.2:10"
+      },
+      "bridge_group": 1
+    }
+  },
+  "loopback": {
+    "ipv4": "10.255.0.2/32",
+    "type": "loopback",
+    "neighbors": [],
+    "virtual_interface": true,
+    "ifindex": 0,
+    "ifname": "lo",
+    "ospf": {
+      "area": "0.0.0.0",
+      "passive": false
+    },
+    "bgp": {
+      "advertise": true
+    }
+  },
+  "ospf": {
+    "area": "0.0.0.0",
+    "router_id": "10.255.0.2",
+    "af": {
+      "ipv4": true
+    },
+    "areas": [
+      {
+        "area": "0.0.0.0",
+        "_area_int": 0,
+        "kind": "regular"
+      }
+    ]
+  },
+  "bgp": {
+    "advertise_loopback": true,
+    "community": {
+      "ibgp": [
+        "standard",
+        "large",
+        "extended"
+      ],
+      "ebgp": [
+        "standard",
+        "large"
+      ],
+      "localas_ibgp": [
+        "standard",
+        "large",
+        "extended"
+      ]
+    },
+    "next_hop_self": true,
+    "as": 65001,
+    "router_id": "10.255.0.2",
+    "neighbors": [
+      {
+        "rr": true,
+        "name": "spine1",
+        "as": 65001,
+        "type": "ibgp",
+        "ipv4": "10.255.0.254",
+        "_source_intf": {
+          "ipv4": "10.255.0.2/32",
+          "type": "loopback",
+          "neighbors": [],
+          "virtual_interface": true,
+          "ifindex": 0,
+          "ifname": "lo",
+          "ospf": {
+            "area": "0.0.0.0",
+            "passive": false
+          }
+        },
+        "next_hop_self": "ebgp",
+        "activate": {
+          "ipv4": true
+        },
+        "evpn": "ipv4"
+      },
+      {
+        "rr": true,
+        "name": "spine2",
+        "as": 65001,
+        "type": "ibgp",
+        "ipv4": "10.255.0.253",
+        "_source_intf": {
+          "ipv4": "10.255.0.2/32",
+          "type": "loopback",
+          "neighbors": [],
+          "virtual_interface": true,
+          "ifindex": 0,
+          "ifname": "lo",
+          "ospf": {
+            "area": "0.0.0.0",
+            "passive": false
+          }
+        },
+        "next_hop_self": "ebgp",
+        "activate": {
+          "ipv4": true
+        },
+        "evpn": "ipv4"
+      }
+    ],
+    "ipv4": true,
+    "advertise": [
+      {
+        "ipv4": "10.255.0.2/32"
+      }
+    ]
+  },
+  "interfaces": [
+    {
+      "ipv4": "10.25.0.9/30",
+      "linkindex": 3,
+      "type": "p2p",
+      "name": "leaf2 -> spine1",
+      "ifindex": 1,
+      "ifname": "eth1",
+      "mtu": 1500,
+      "neighbors": [
+        {
+          "ipv4": "10.25.0.10/30",
+          "ifname": "eth2",
+          "node": "spine1"
+        }
+      ],
+      "ospf": {
+        "area": "0.0.0.0",
+        "passive": false,
+        "network_type": "point-to-point"
+      }
+    },
+    {
+      "ipv4": "10.25.0.13/30",
+      "linkindex": 4,
+      "type": "p2p",
+      "name": "leaf2 -> spine2",
+      "ifindex": 2,
+      "ifname": "eth2",
+      "mtu": 1500,
+      "neighbors": [
+        {
+          "ipv4": "10.25.0.14/30",
+          "ifname": "eth2",
+          "node": "spine2"
+        }
+      ],
+      "ospf": {
+        "area": "0.0.0.0",
+        "passive": false,
+        "network_type": "point-to-point"
+      }
+    },
+    {
+      "vlan": {
+        "access": "services",
+        "access_id": 10
+      },
+      "linkindex": 9,
+      "type": "lan",
+      "bridge": "devcloudev_9",
+      "ifindex": 3,
+      "ifname": "eth3",
+      "mtu": 1500,
+      "neighbors": [
+        {
+          "ipv4": "10.25.0.26/29",
+          "ifname": "eth1",
+          "node": "annuaire"
+        }
+      ],
+      "name": "[Access VLAN services] leaf2 -> annuaire"
+    },
+    {
+      "vlan": {
+        "mode": "bridge",
+        "name": "services"
+      },
+      "type": "svi",
+      "ifindex": 40000,
+      "mac_address": "caf4.0004.0000",
+      "ifname": "vlan10",
+      "name": "VLAN services (10) -> [web1,leaf1,annuaire,dns1,web2...]",
+      "virtual_interface": true,
+      "neighbors": [
+        {
+          "ipv4": "10.25.0.25/29",
+          "ifname": "eth1",
+          "node": "web1"
+        },
+        {
+          "ifname": "vlan10",
+          "node": "leaf1",
+          "vlan": {
+            "mode": "bridge",
+            "name": "services"
+          }
+        },
+        {
+          "ipv4": "10.25.0.26/29",
+          "ifname": "eth1",
+          "node": "annuaire"
+        },
+        {
+          "ipv4": "10.25.0.27/29",
+          "ifname": "eth1",
+          "node": "dns1"
+        },
+        {
+          "ipv4": "10.25.0.28/29",
+          "ifname": "eth1",
+          "node": "web2"
+        },
+        {
+          "ifname": "vlan10",
+          "node": "leaf3",
+          "vlan": {
+            "mode": "bridge",
+            "name": "services"
+          }
+        }
+      ],
+      "bridge_group": 1
+    }
+  ],
+  "module": [
+    "vlan",
+    "ospf",
+    "bgp",
+    "vxlan",
+    "evpn"
+  ],
+  "clab": {
+    "kind": "linux",
+    "config_templates": [
+      {
+        "source": "initial",
+        "target": "/etc/config/01-initial.sh",
+        "mode": "sh"
+      },
+      {
+        "source": "vlan",
+        "target": "/etc/config/02-vlan.sh",
+        "mode": "sh"
+      },
+      {
+        "source": "ospf",
+        "target": "/etc/config/03-ospf.sh",
+        "mode": "sh"
+      },
+      {
+        "source": "bgp",
+        "target": "/etc/config/04-bgp.sh",
+        "mode": "sh"
+      },
+      {
+        "source": "vxlan",
+        "target": "/etc/config/05-vxlan.sh",
+        "mode": "sh"
+      },
+      {
+        "source": "evpn",
+        "target": "/etc/config/06-evpn.sh",
+        "mode": "sh"
+      },
+      {
+        "source": "daemons",
+        "target": "/etc/frr/daemons"
+      },
+      {
+        "source": "hosts",
+        "target": "/etc/hosts",
+        "mode": "shared"
+      }
+    ],
+    "exec": [
+      "sleep 1"
+    ],
+    "binds": [
+      {
+        "target": "/etc/config/01-initial.sh",
+        "source": "node_files/leaf2/initial"
+      },
+      {
+        "target": "/etc/config/02-vlan.sh",
+        "source": "node_files/leaf2/vlan"
+      },
+      {
+        "target": "/etc/config/03-ospf.sh",
+        "source": "node_files/leaf2/ospf"
+      },
+      {
+        "target": "/etc/config/04-bgp.sh",
+        "source": "node_files/leaf2/bgp"
+      },
+      {
+        "target": "/etc/config/05-vxlan.sh",
+        "source": "node_files/leaf2/vxlan"
+      },
+      {
+        "target": "/etc/config/06-evpn.sh",
+        "source": "node_files/leaf2/evpn"
+      },
+      {
+        "target": "/etc/frr/daemons",
+        "source": "node_files/leaf2/daemons"
+      },
+      {
+        "target": "/etc/hosts",
+        "source": "node_files/-shared-hosts",
+        "mode": "ro"
+      }
+    ]
+  },
+  "box": "quay.io/frrouting/frr:10.6.1",
+  "evpn": {
+    "session": [
+      "ibgp"
+    ],
+    "vlans": [
+      "services"
+    ],
+    "transport": "vxlan"
+  },
+  "vxlan": {
+    "domain": "global",
+    "flooding": "evpn",
+    "vlans": [
+      "services"
+    ],
+    "transport": "ipv4",
+    "vtep": "10.255.0.2",
+    "vtep_interface": "lo"
+  },
+  "role": "router",
+  "mtu": 1500,
+  "af": {
+    "ipv4": true
+  },
+  "mgmt": {
+    "ifname": "eth0",
+    "mac": "ca:fe:00:04:00:00",
+    "ipv4": "192.168.121.104"
+  },
+  "hostname": "clab-devcloudevpn-leaf2",
+  "vlan": {
+    "max_bridge_group": 1
+  },
+  "netlab_ansible_skip_module": [
+    "initial",
+    "vlan",
+    "ospf",
+    "bgp",
+    "vxlan",
+    "evpn"
+  ],
+  "_node_config": {
+    "initial": "/etc/config/01-initial.sh:sh",
+    "vlan": "/etc/config/02-vlan.sh:sh",
+    "ospf": "/etc/config/03-ospf.sh:sh",
+    "bgp": "/etc/config/04-bgp.sh:sh",
+    "vxlan": "/etc/config/05-vxlan.sh:sh",
+    "evpn": "/etc/config/06-evpn.sh:sh"
+  }
+}

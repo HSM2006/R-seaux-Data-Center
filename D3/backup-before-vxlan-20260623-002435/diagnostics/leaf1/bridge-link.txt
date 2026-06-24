@@ -1,0 +1,2 @@
+539: eth3@if540: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 master vlan10 state forwarding priority 32 cost 2 
+5: vxlan1010: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 master vlan10 state forwarding priority 32 cost 100 

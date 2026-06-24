@@ -1,0 +1,13 @@
+NAMES                        IMAGE                          STATUS        PORTS
+clab-devcloudevpn-spine2     quay.io/frrouting/frr:10.6.1   Up 15 hours   
+clab-devcloudevpn-leaf2      quay.io/frrouting/frr:10.6.1   Up 15 hours   
+clab-devcloudevpn-dns1       devcloud-unbound:latest        Up 15 hours   
+clab-devcloudevpn-spine1     quay.io/frrouting/frr:10.6.1   Up 15 hours   
+clab-devcloudevpn-leaf3      quay.io/frrouting/frr:10.6.1   Up 15 hours   
+clab-devcloudevpn-web2       devcloud-web:latest            Up 15 hours   
+clab-devcloudevpn-leaf1      quay.io/frrouting/frr:10.6.1   Up 15 hours   
+clab-devcloudevpn-web1       devcloud-web:latest            Up 15 hours   
+clab-devcloudevpn-annuaire   alpine:latest                  Up 15 hours   
+edgeshark-edgeshark-1        ghcr.io/siemens/packetflix     Up 7 days     5000/tcp, 127.0.0.1:5001->5001/tcp
+edgeshark-gostwire-1         ghcr.io/siemens/ghostwire      Up 8 days     
+sflowtrend-pro               sflow/sflowtrend               Up 9 days     0.0.0.0:8087->8087/tcp, [::]:8087->8087/tcp, 0.0.0.0:8443->8443/tcp, [::]:8443->8443/tcp, 0.0.0.0:6344->6343/udp, [::]:6344->6343/udp

@@ -1,0 +1,324 @@
+{
+  "bgp": {
+    "advertise_loopback": true,
+    "community": {
+      "ibgp": [
+        "standard",
+        "large",
+        "extended"
+      ],
+      "ebgp": [
+        "standard",
+        "large"
+      ],
+      "localas_ibgp": [
+        "standard",
+        "large",
+        "extended"
+      ]
+    },
+    "next_hop_self": true,
+    "as": 65001,
+    "rr": true,
+    "router_id": "10.255.0.253",
+    "rr_cluster_id": "10.255.0.253",
+    "neighbors": [
+      {
+        "rr": true,
+        "name": "spine1",
+        "as": 65001,
+        "type": "ibgp",
+        "ipv4": "10.255.0.254",
+        "_source_intf": {
+          "ipv4": "10.255.0.253/32",
+          "type": "loopback",
+          "neighbors": [],
+          "virtual_interface": true,
+          "ifindex": 0,
+          "ifname": "lo",
+          "ospf": {
+            "area": "0.0.0.0",
+            "passive": false
+          }
+        },
+        "next_hop_self": "ebgp",
+        "activate": {
+          "ipv4": true
+        },
+        "evpn": "ipv4"
+      },
+      {
+        "name": "leaf1",
+        "as": 65001,
+        "type": "ibgp",
+        "ipv4": "10.255.0.1",
+        "_source_intf": {
+          "ipv4": "10.255.0.253/32",
+          "type": "loopback",
+          "neighbors": [],
+          "virtual_interface": true,
+          "ifindex": 0,
+          "ifname": "lo",
+          "ospf": {
+            "area": "0.0.0.0",
+            "passive": false
+          }
+        },
+        "next_hop_self": "ebgp",
+        "rr_client": true,
+        "activate": {
+          "ipv4": true
+        },
+        "evpn": "ipv4"
+      },
+      {
+        "name": "leaf2",
+        "as": 65001,
+        "type": "ibgp",
+        "ipv4": "10.255.0.2",
+        "_source_intf": {
+          "ipv4": "10.255.0.253/32",
+          "type": "loopback",
+          "neighbors": [],
+          "virtual_interface": true,
+          "ifindex": 0,
+          "ifname": "lo",
+          "ospf": {
+            "area": "0.0.0.0",
+            "passive": false
+          }
+        },
+        "next_hop_self": "ebgp",
+        "rr_client": true,
+        "activate": {
+          "ipv4": true
+        },
+        "evpn": "ipv4"
+      },
+      {
+        "name": "leaf3",
+        "as": 65001,
+        "type": "ibgp",
+        "ipv4": "10.255.0.3",
+        "_source_intf": {
+          "ipv4": "10.255.0.253/32",
+          "type": "loopback",
+          "neighbors": [],
+          "virtual_interface": true,
+          "ifindex": 0,
+          "ifname": "lo",
+          "ospf": {
+            "area": "0.0.0.0",
+            "passive": false
+          }
+        },
+        "next_hop_self": "ebgp",
+        "rr_client": true,
+        "activate": {
+          "ipv4": true
+        },
+        "evpn": "ipv4"
+      }
+    ],
+    "ipv4": true,
+    "advertise": [
+      {
+        "ipv4": "10.255.0.253/32"
+      }
+    ]
+  },
+  "loopback": {
+    "ipv4": "10.255.0.253/32",
+    "type": "loopback",
+    "neighbors": [],
+    "virtual_interface": true,
+    "ifindex": 0,
+    "ifname": "lo",
+    "ospf": {
+      "area": "0.0.0.0",
+      "passive": false
+    },
+    "bgp": {
+      "advertise": true
+    }
+  },
+  "ospf": {
+    "area": "0.0.0.0",
+    "router_id": "10.255.0.253",
+    "af": {
+      "ipv4": true
+    },
+    "areas": [
+      {
+        "area": "0.0.0.0",
+        "_area_int": 0,
+        "kind": "regular"
+      }
+    ]
+  },
+  "interfaces": [
+    {
+      "ipv4": "10.25.0.6/30",
+      "linkindex": 2,
+      "type": "p2p",
+      "name": "spine2 -> leaf1",
+      "ifindex": 1,
+      "ifname": "eth1",
+      "mtu": 1500,
+      "neighbors": [
+        {
+          "ipv4": "10.25.0.5/30",
+          "ifname": "eth2",
+          "node": "leaf1"
+        }
+      ],
+      "ospf": {
+        "area": "0.0.0.0",
+        "passive": false,
+        "network_type": "point-to-point"
+      }
+    },
+    {
+      "ipv4": "10.25.0.14/30",
+      "linkindex": 4,
+      "type": "p2p",
+      "name": "spine2 -> leaf2",
+      "ifindex": 2,
+      "ifname": "eth2",
+      "mtu": 1500,
+      "neighbors": [
+        {
+          "ipv4": "10.25.0.13/30",
+          "ifname": "eth2",
+          "node": "leaf2"
+        }
+      ],
+      "ospf": {
+        "area": "0.0.0.0",
+        "passive": false,
+        "network_type": "point-to-point"
+      }
+    },
+    {
+      "ipv4": "10.25.0.22/30",
+      "linkindex": 6,
+      "type": "p2p",
+      "name": "spine2 -> leaf3",
+      "ifindex": 3,
+      "ifname": "eth3",
+      "mtu": 1500,
+      "neighbors": [
+        {
+          "ipv4": "10.25.0.21/30",
+          "ifname": "eth2",
+          "node": "leaf3"
+        }
+      ],
+      "ospf": {
+        "area": "0.0.0.0",
+        "passive": false,
+        "network_type": "point-to-point"
+      }
+    }
+  ],
+  "module": [
+    "ospf",
+    "bgp",
+    "evpn"
+  ],
+  "clab": {
+    "kind": "linux",
+    "config_templates": [
+      {
+        "source": "initial",
+        "target": "/etc/config/01-initial.sh",
+        "mode": "sh"
+      },
+      {
+        "source": "ospf",
+        "target": "/etc/config/02-ospf.sh",
+        "mode": "sh"
+      },
+      {
+        "source": "bgp",
+        "target": "/etc/config/03-bgp.sh",
+        "mode": "sh"
+      },
+      {
+        "source": "evpn",
+        "target": "/etc/config/04-evpn.sh",
+        "mode": "sh"
+      },
+      {
+        "source": "daemons",
+        "target": "/etc/frr/daemons"
+      },
+      {
+        "source": "hosts",
+        "target": "/etc/hosts",
+        "mode": "shared"
+      }
+    ],
+    "exec": [
+      "sleep 1"
+    ],
+    "binds": [
+      {
+        "target": "/etc/config/01-initial.sh",
+        "source": "node_files/spine2/initial"
+      },
+      {
+        "target": "/etc/config/02-ospf.sh",
+        "source": "node_files/spine2/ospf"
+      },
+      {
+        "target": "/etc/config/03-bgp.sh",
+        "source": "node_files/spine2/bgp"
+      },
+      {
+        "target": "/etc/config/04-evpn.sh",
+        "source": "node_files/spine2/evpn"
+      },
+      {
+        "target": "/etc/frr/daemons",
+        "source": "node_files/spine2/daemons"
+      },
+      {
+        "target": "/etc/hosts",
+        "source": "node_files/-shared-hosts",
+        "mode": "ro"
+      }
+    ]
+  },
+  "box": "quay.io/frrouting/frr:10.6.1",
+  "evpn": {
+    "session": [
+      "ibgp"
+    ],
+    "vlans": [],
+    "transport": "vxlan"
+  },
+  "role": "router",
+  "mtu": 1500,
+  "af": {
+    "ipv4": true
+  },
+  "mgmt": {
+    "ifname": "eth0",
+    "mac": "ca:fe:00:02:00:00",
+    "ipv4": "192.168.121.102"
+  },
+  "hostname": "clab-devcloudevpn-spine2",
+  "netlab_ansible_skip_module": [
+    "initial",
+    "ospf",
+    "bgp",
+    "evpn"
+  ],
+  "_node_config": {
+    "initial": "/etc/config/01-initial.sh:sh",
+    "ospf": "/etc/config/02-ospf.sh:sh",
+    "bgp": "/etc/config/03-bgp.sh:sh",
+    "evpn": "/etc/config/04-evpn.sh:sh"
+  }
+}

@@ -1,0 +1,42 @@
+#!/usr/bin/vtysh -f
+!
+router bgp 65001
+  no bgp ebgp-requires-policy
+  no bgp default ipv4-unicast
+  bgp default show-hostname
+  bgp default show-nexthop-hostname
+  ! Consider AS paths of same length but with different AS as ECMP candidates
+  bgp bestpath as-path multipath-relax
+
+  bgp router-id 10.255.0.3
+!
+  neighbor 10.255.0.254 remote-as 65001
+  neighbor 10.255.0.254 description spine1
+  neighbor 10.255.0.254 update-source lo
+!
+  neighbor 10.255.0.253 remote-as 65001
+  neighbor 10.255.0.253 description spine2
+  neighbor 10.255.0.253 update-source lo
+!
+ address-family ipv4 unicast
+!
+
+  network 10.255.0.3/32
+  network 10.192.1.0/24
+!
+  neighbor 10.255.0.254 activate
+  neighbor 10.255.0.254 next-hop-self
+  no neighbor 10.255.0.254 send-community all
+  neighbor 10.255.0.254 send-community standard
+  neighbor 10.255.0.254 send-community large
+  neighbor 10.255.0.254 send-community extended
+!
+  neighbor 10.255.0.253 activate
+  neighbor 10.255.0.253 next-hop-self
+  no neighbor 10.255.0.253 send-community all
+  neighbor 10.255.0.253 send-community standard
+  neighbor 10.255.0.253 send-community large
+  neighbor 10.255.0.253 send-community extended
+!
+!
+do write
