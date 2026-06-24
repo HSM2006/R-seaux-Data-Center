@@ -1,0 +1,85 @@
+# ============================================================
+# SAE DevCloud 4D01 — DC1 Netlab Topology
+# Auteur : Houssam
+# Fabric : 2 spines (AS 65100) + 3 leafs (AS 65001/65002/65003)
+# Underlay : BGP iBGP avec spines comme Route Reflectors
+# Overlay  : EVPN/VXLAN VNI 10100
+# Services : 172.20.1.0/24
+# ============================================================
+name: dc1-evpn
+provider: clab
+
+defaults:
+  device: frr
+  # Image FRR custom buildée localement
+  clab:
+    image: frrouting/frr:latest
+
+# Module BGP pour l'underlay
+module: [bgp]
+
+bgp:
+  as: 65001
+  # Activer EVPN sur tous les noeuds
+  advertise_loopback: true
+
+nodes:
+  # --- Spines : Route Reflectors EVPN, pas de VXLAN ---
+  spine1:
+    bgp:
+      as: 65100
+      rr: true
+    loopback:
+      ipv4: 172.16.255.1/32
+
+  spine2:
+    bgp:
+      as: 65100
+      rr: true
+    loopback:
+      ipv4: 172.16.255.2/32
+
+  # --- Leafs : VTEPs VXLAN ---
+  leaf1:
+    bgp:
+      as: 65001
+    loopback:
+      ipv4: 172.16.255.11/32
+
+  leaf2:
+    bgp:
+      as: 65002
+    loopback:
+      ipv4: 172.16.255.12/32
+
+  leaf3:
+    bgp:
+      as: 65003
+    loopback:
+      ipv4: 172.16.255.13/32
+
+# Full mesh spine-leaf (chaque leaf connecté aux 2 spines)
+links:
+  - spine1:
+    leaf1:
+    prefix: 172.16.0.0/31
+  - spine1:
+    leaf2:
+    prefix: 172.16.0.2/31
+  - spine1:
+    leaf3:
+    prefix: 172.16.0.4/31
+  - spine2:
+    leaf1:
+    prefix: 172.16.0.6/31
+  - spine2:
+    leaf2:
+    prefix: 172.16.0.8/31
+  - spine2:
+    leaf3:
+    prefix: 172.16.0.10/31
+
+# Note post-déploiement :
+# Après `netlab up`, lancer dc1/scripts/setup-vtep.sh sur chaque leaf
+# pour créer les bridges br10100 + interfaces vxlan10100
+# Puis `docker-compose up -d` dans dc1/services/

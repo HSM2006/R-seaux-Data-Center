@@ -1,0 +1,153 @@
+# ============================================================
+# SAE DevCloud 4D01 — DC1 Containerlab Topology
+# Auteur : Houssam
+# Adressage services : 172.20.1.0/24
+# Underlay            : 172.16.0.0/24 (P2P /31) + 172.16.255.x/32 (loopbacks)
+# Overlay EVPN        : VNI 10100
+# Gateway des CONTAINERS DE SERVICE : 172.20.1.253/24 (IP sur br10100 de
+#   leaf1, routee par FRR/BGP). C'est elle qu'il faut utiliser en default
+#   route dans web1/2/3, dns1/2, samba — sinon la reponse sort par
+#   veth-host -> VM -> ens18 alors que la requete est entree par
+#   Catalyst -> spine -> leaf : routage asymetrique, rejete par l'autre
+#   groupe (uRPF / ARP qui ne resout pas). Vu en pratique le 23/06 :
+#   ping externe KO avec .254, OK avec .253.
+# Gateway de la VM elle-meme (pas des containers) : 172.20.1.254/24
+#   (veth-host sur br10100 de leaf1) — sert uniquement a ce que la VM
+#   hote (root netns) atteigne le fabric, ne pas y toucher.
+#
+# IMPORTANT — mgmt-ipv4 épinglées :
+# Sans `mgmt-ipv4:` ci-dessous, Containerlab assigne les IPs de
+# management dans un ordre non déterministe à chaque `clab deploy`
+# (vu en pratique : leaf1 a pris .3 au lieu de .11). On épingle donc
+# une IP fixe par nœud, SANS déclarer de bloc `mgmt:` séparé — ça
+# reste sur le réseau Docker partagé `clab` (172.20.20.0/24) déjà
+# utilisé par tous les labs sur cette VM, pas de réseau dédié à créer.
+# Tous les fichiers de conf (prometheus.yml, oxidized/router.db,
+# gnmic.yml, check-telemetry.sh, GUIDE-SOUTENANCE.md) supposent ces
+# IPs fixes : leaf1=.11 leaf2=.12 leaf3=.13 spine1=.101 spine2=.102.
+# ============================================================
+name: dc1-evpn
+
+topology:
+  nodes:
+    # ---- Spines (Route Reflectors EVPN) ----
+    spine1:
+      kind: linux
+      image: frrouting/frr:latest
+      cap-add: [NET_ADMIN, SYS_ADMIN]
+      mgmt-ipv4: 172.20.20.101
+      binds:
+        - frr/daemons:/etc/frr/daemons
+        - frr/bgp/spine1.conf:/etc/frr/frr.conf
+        - ../services/snmp/snmpd.conf:/etc/snmp/snmpd.conf
+
+    spine2:
+      kind: linux
+      image: frrouting/frr:latest
+      cap-add: [NET_ADMIN, SYS_ADMIN]
+      mgmt-ipv4: 172.20.20.102
+      binds:
+        - frr/daemons:/etc/frr/daemons
+        - frr/bgp/spine2.conf:/etc/frr/frr.conf
+        - ../services/snmp/snmpd.conf:/etc/snmp/snmpd.conf
+
+    # ---- Leafs (VTEPs VXLAN) ----
+    leaf1:
+      kind: linux
+      image: frrouting/frr:latest
+      cap-add: [NET_ADMIN, SYS_ADMIN]
+      mgmt-ipv4: 172.20.20.11
+      binds:
+        - frr/daemons:/etc/frr/daemons
+        - frr/bgp/leaf1.conf:/etc/frr/frr.conf
+        - ../services/snmp/snmpd.conf:/etc/snmp/snmpd.conf
+
+    leaf2:
+      kind: linux
+      image: frrouting/frr:latest
+      cap-add: [NET_ADMIN, SYS_ADMIN]
+      mgmt-ipv4: 172.20.20.12
+      binds:
+        - frr/daemons:/etc/frr/daemons
+        - frr/bgp/leaf2.conf:/etc/frr/frr.conf
+        - ../services/snmp/snmpd.conf:/etc/snmp/snmpd.conf
+
+    leaf3:
+      kind: linux
+      image: frrouting/frr:latest
+      cap-add: [NET_ADMIN, SYS_ADMIN]
+      mgmt-ipv4: 172.20.20.13
+      binds:
+        - frr/daemons:/etc/frr/daemons
+        - frr/bgp/leaf3.conf:/etc/frr/frr.conf
+        - ../services/snmp/snmpd.conf:/etc/snmp/snmpd.conf
+
+    # ---- Services sur leaf1 : web1 + dns1 ----
+    web1:
+      kind: linux
+      image: nginx:alpine
+      exec:
+        - ip addr add 172.20.1.10/24 dev eth1
+        - ip link set eth1 up
+        - ip route replace default via 172.20.1.253
+        - "sh -c 'echo \"<h1>DC1 - Web1 - leaf1</h1>\" > /usr/share/nginx/html/index.html'"
+
+    dns1:
+      kind: linux
+      image: dc1-dns:latest
+      exec:
+        - ip addr add 172.20.1.20/24 dev eth1
+        - ip link set eth1 up
+        - ip route replace default via 172.20.1.253
+
+    # ---- Services sur leaf2 : web2 + dns2 (HA) ----
+    web2:
+      kind: linux
+      image: nginx:alpine
+      exec:
+        - ip addr add 172.20.1.11/24 dev eth1
+        - ip link set eth1 up
+        - ip route replace default via 172.20.1.253
+        - "sh -c 'echo \"<h1>DC1 - Web2 - leaf2</h1>\" > /usr/share/nginx/html/index.html'"
+
+    dns2:
+      kind: linux
+      image: dc1-dns:latest
+      exec:
+        - ip addr add 172.20.1.21/24 dev eth1
+        - ip link set eth1 up
+        - ip route replace default via 172.20.1.253
+
+    # ---- Services sur leaf3 : web3 + samba/AD ----
+    web3:
+      kind: linux
+      image: nginx:alpine
+      exec:
+        - ip addr add 172.20.1.12/24 dev eth1
+        - ip link set eth1 up
+        - ip route replace default via 172.20.1.253
+        - "sh -c 'echo \"<h1>DC1 - Web3 - leaf3</h1>\" > /usr/share/nginx/html/index.html'"
+
+    samba:
+      kind: linux
+      image: dockurr/samba
+      exec:
+        - ip addr add 172.20.1.30/24 dev eth1
+        - ip link set eth1 up
+        - ip route replace default via 172.20.1.253
+
+  links:
+    # ---- Full mesh spine-leaf (underlay) ----
+    - endpoints: [spine1:eth1, leaf1:eth1]
+    - endpoints: [spine1:eth2, leaf2:eth1]
+    - endpoints: [spine1:eth3, leaf3:eth1]
+    - endpoints: [spine2:eth1, leaf1:eth2]
+    - endpoints: [spine2:eth2, leaf2:eth2]
+    - endpoints: [spine2:eth3, leaf3:eth2]
+    # ---- Services vers leafs ----
+    - endpoints: [leaf1:eth3, web1:eth1]
+    - endpoints: [leaf1:eth4, dns1:eth1]
+    - endpoints: [leaf2:eth3, web2:eth1]
+    - endpoints: [leaf2:eth4, dns2:eth1]
+    - endpoints: [leaf3:eth3, web3:eth1]
+    - endpoints: [leaf3:eth4, samba:eth1]

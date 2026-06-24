@@ -1,0 +1,12 @@
+# Provider de dashboards auto-chargés (SAE DevCloud 4D01)
+apiVersion: 1
+providers:
+  - name: 'DC1'
+    orgId: 1
+    folder: 'DC1 - SAE DevCloud'
+    type: file
+    disableDeletion: false
+    editable: true
+    updateIntervalSeconds: 30
+    options:
+      path: /var/lib/grafana/dashboards

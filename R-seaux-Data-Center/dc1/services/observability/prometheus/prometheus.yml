@@ -1,0 +1,103 @@
+# ============================================================
+# Prometheus — configuration DC1 (SAE DevCloud 4D01)
+# Collecte : SNMP des leafs/spines (trafic + BGP via snmp_exporter),
+#            frr_exporter (optionnel), Catalyst (SNMP), services, hôte.
+# La stack tourne en network_mode: host -> 'localhost' = la VM.
+# ============================================================
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # ---- Prometheus lui-même ----
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # ---- Node exporter (hôte VM) ----
+  - job_name: 'node-vm'
+    static_configs:
+      - targets: ['localhost:9100']
+
+  # ===========================================================
+  # SNMP leafs & spines via snmp_exporter (IF-MIB = trafic)
+  # Cibles = IP de management Containerlab (172.20.20.x)
+  # ===========================================================
+  - job_name: 'snmp-fabric-if'
+    metrics_path: /snmp
+    params:
+      module: [if_mib]
+      auth: [public_v2]
+    static_configs:
+      - targets:
+          - 172.20.20.11:10161   # leaf1
+          - 172.20.20.12:10161   # leaf2
+          - 172.20.20.13:10161   # leaf3
+          - 172.20.20.101:10161  # spine1
+          - 172.20.20.102:10161  # spine2
+        labels:
+          fabric: dc1
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: localhost:9116    # snmp_exporter
+
+  # ---- SNMP leafs/spines : état BGP (BGP4-MIB via FRR AgentX) ----
+  - job_name: 'snmp-fabric-bgp'
+    metrics_path: /snmp
+    params:
+      module: [bgp]
+      auth: [public_v2]
+    static_configs:
+      - targets:
+          - 172.20.20.11:10161
+          - 172.20.20.12:10161
+          - 172.20.20.13:10161
+          - 172.20.20.101:10161
+          - 172.20.20.102:10161
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: localhost:9116
+
+  # ---- Catalyst 8000 via SNMP ----
+  - job_name: 'snmp-catalyst'
+    metrics_path: /snmp
+    params:
+      module: [if_mib]
+      auth: [public_v2]
+    static_configs:
+      - targets: ['10.202.0.12']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: localhost:9116
+
+  # ===========================================================
+  # frr_exporter (OPTIONNEL — métriques FRR natives, port 9342)
+  # A déployer avec enable-frr-exporter.sh. Si absent, ces cibles
+  # apparaissent 'down' sans gêner le reste.
+  # ===========================================================
+  - job_name: 'frr-exporter'
+    static_configs:
+      - targets:
+          - 172.20.20.11:9342
+          - 172.20.20.12:9342
+          - 172.20.20.13:9342
+          - 172.20.20.101:9342
+          - 172.20.20.102:9342
+
+  # ---- Uptime Kuma (monitoring services web) ----
+  - job_name: 'uptime-kuma'
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['172.20.1.50:3001']

@@ -1,0 +1,102 @@
+# ============================================================
+# Stack Observabilité DC1 — SAE DevCloud 4D01 — Houssam
+# Prometheus + Grafana + snmp_exporter + node_exporter
+# (+ gNMIc/sFlow optionnels, plutôt pour le DC2 Arista du binôme)
+#
+# network_mode: host -> le collecteur joint TOUT depuis la VM :
+#   - IP management Containerlab des leafs/spines (172.20.20.x)
+#   - overlay services via veth-host (172.20.1.x)
+#   - Catalyst via l'interface principale (10.202.0.12)
+#
+# Usage : docker compose up -d
+# Accès : Grafana http://<IP_VM>:3000  (admin / DevCloud2025!)
+#         Prometheus http://<IP_VM>:9090
+# ============================================================
+
+services:
+  # ---- Prometheus — collecte des métriques ----
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: dc1-prometheus
+    network_mode: host
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.listen-address=:9090'
+    restart: unless-stopped
+
+  # ---- snmp_exporter — passerelle SNMP -> Prometheus ----
+  snmp-exporter:
+    image: prom/snmp-exporter:latest
+    container_name: dc1-snmp-exporter
+    network_mode: host
+    volumes:
+      - ./snmp-exporter/snmp.yml:/etc/snmp_exporter/snmp.yml:ro
+    command:
+      - '--config.file=/etc/snmp_exporter/snmp.yml'
+      - '--web.listen-address=:9116'
+    restart: unless-stopped
+
+  # ---- node_exporter — métriques de l'hôte VM ----
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: dc1-node-exporter
+    network_mode: host
+    pid: host
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--path.rootfs=/rootfs'
+      - '--web.listen-address=:9100'
+    restart: unless-stopped
+
+  # ---- Grafana — dashboards (datasource + dashboard auto-provisionnés) ----
+  grafana:
+    image: grafana/grafana:latest
+    container_name: dc1-grafana
+    network_mode: host
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: DevCloud2025!
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_SERVER_HTTP_PORT: "3000"
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+  # ---- gNMIc — télémétrie streaming (OpenConfig) ----
+  # NB : FRR n'a PAS de serveur gNMI. Ce collecteur sert pour le DC2
+  # (Arista cEOS du binôme) qui parle gNMI nativement. Laissé prêt.
+  gnmic:
+    image: ghcr.io/openconfig/gnmic:latest
+    container_name: dc1-gnmic
+    network_mode: host
+    volumes:
+      - ./gnmic/gnmic.yml:/app/gnmic.yml:ro
+    command: ["subscribe", "--config", "/app/gnmic.yml"]
+    restart: unless-stopped
+    profiles: ["arista"]   # ne démarre qu'avec --profile arista
+
+  # ---- sFlow collector (sampling trafic, optionnel) ----
+  sflow-collector:
+    image: networkstatic/sflowtool:latest
+    container_name: dc1-sflow
+    network_mode: host
+    command: ["-p", "6343", "-l"]
+    restart: unless-stopped
+    profiles: ["sflow"]    # ne démarre qu'avec --profile sflow
+
+volumes:
+  prometheus-data:
+  grafana-data:
