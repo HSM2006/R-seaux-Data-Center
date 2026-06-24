@@ -1,7 +1,0 @@
-clab-dc2-evpn/
-R-seaux-Data-Center/
-host-frr/
-*.log
-.cache/
-__pycache__/
-*.pyc
