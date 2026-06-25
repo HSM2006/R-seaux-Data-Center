@@ -58,7 +58,7 @@ services:
     environment:
       POSTGRES_DB: nautobot
       POSTGRES_USER: nautobot
-      POSTGRES_PASSWORD: DevCloud2025!
+      POSTGRES_PASSWORD: ${NAUTOBOT_DB_PASSWORD:-changeme}
     volumes:
       - nautobot-db:/var/lib/postgresql/data
     networks:

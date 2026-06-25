@@ -9,7 +9,7 @@
 #   - Catalyst via l'interface principale (10.202.0.12)
 #
 # Usage : docker compose up -d
-# Accès : Grafana http://<IP_VM>:3000  (admin / DevCloud2025!)
+# Accès : Grafana http://<IP_VM>:3000  (admin / voir $GRAFANA_ADMIN_PASSWORD dans .env, ou 'changeme' par defaut)
 #         Prometheus http://<IP_VM>:9090
 # ============================================================
 
@@ -68,7 +68,7 @@ services:
       - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
     environment:
       GF_SECURITY_ADMIN_USER: admin
-      GF_SECURITY_ADMIN_PASSWORD: DevCloud2025!
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-changeme}
       GF_USERS_ALLOW_SIGN_UP: "false"
       GF_SERVER_HTTP_PORT: "3000"
     depends_on:

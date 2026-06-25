@@ -5,4 +5,7 @@ __pycache__/
 *.log
 clab-*
 .topology.clab.yml.bak
-dc1/services/oxidized/config.local
+"DC1 - Houssam/services/oxidized/config.local"
+
+# Secrets locaux (copier les .example puis remplir les vraies valeurs)
+"DC1 - Houssam/services/nautobot/nautobot.env"

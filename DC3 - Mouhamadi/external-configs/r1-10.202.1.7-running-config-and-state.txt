@@ -137,9 +137,9 @@ diagnostic bootup level minimal
 memory free low-watermark processor 68484
 !
 !
-username ${SSH_USERNAME} privilege 15 secret 9 $9$NmJM7bInqSZI.E$yRgLy7ZhSjZtex2tDPU57wmpkwdTPiU1VDduAKH9jiM
-username cisco privilege 15 password 0 cisco 
-username admin privilege 15 password 0 admin
+username ${SSH_USERNAME} privilege 15 secret 9 [REDACTED - hash retire, voir note securite]
+username cisco privilege 15 password 0 [REDACTED - identifiant de secours a desactiver/changer sur le vrai routeur]
+username admin privilege 15 password 0 [REDACTED - identifiant de secours a desactiver/changer sur le vrai routeur]
 !
 redundancy
 !

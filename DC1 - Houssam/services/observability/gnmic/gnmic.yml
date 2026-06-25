@@ -5,19 +5,19 @@
 targets:
   "172.20.20.11:57400":
     username: admin
-    password: DevCloud2025!
+    password: CHANGEME  # fichier pret pour DC2 Arista, pas encore branche sur du reel
     skip-verify: true
     subscriptions:
       - sub1
   "172.20.20.12:57400":
     username: admin
-    password: DevCloud2025!
+    password: CHANGEME  # fichier pret pour DC2 Arista, pas encore branche sur du reel
     skip-verify: true
     subscriptions:
       - sub1
   "172.20.20.13:57400":
     username: admin
-    password: DevCloud2025!
+    password: CHANGEME  # fichier pret pour DC2 Arista, pas encore branche sur du reel
     skip-verify: true
     subscriptions:
       - sub1
