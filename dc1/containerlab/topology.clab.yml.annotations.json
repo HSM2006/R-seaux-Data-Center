@@ -1,0 +1,89 @@
+{
+  "freeTextAnnotations": [],
+  "freeShapeAnnotations": [],
+  "trafficRateAnnotations": [],
+  "groupStyleAnnotations": [],
+  "networkNodeAnnotations": [],
+  "nodeAnnotations": [
+    {
+      "id": "spine1",
+      "position": {
+        "x": 300,
+        "y": 280
+      }
+    },
+    {
+      "id": "spine2",
+      "position": {
+        "x": 300,
+        "y": 380
+      }
+    },
+    {
+      "id": "leaf1",
+      "position": {
+        "x": 460,
+        "y": 340
+      }
+    },
+    {
+      "id": "leaf2",
+      "position": {
+        "x": 420,
+        "y": 240
+      }
+    },
+    {
+      "id": "leaf3",
+      "position": {
+        "x": 400,
+        "y": 460
+      }
+    },
+    {
+      "id": "web1",
+      "position": {
+        "x": 500,
+        "y": 180
+      }
+    },
+    {
+      "id": "dns1",
+      "position": {
+        "x": 480,
+        "y": 500
+      }
+    },
+    {
+      "id": "web2",
+      "position": {
+        "x": 600,
+        "y": 220
+      }
+    },
+    {
+      "id": "dns2",
+      "position": {
+        "x": 560,
+        "y": 100
+      }
+    },
+    {
+      "id": "web3",
+      "position": {
+        "x": 580,
+        "y": 500
+      }
+    },
+    {
+      "id": "samba",
+      "position": {
+        "x": 360,
+        "y": 620
+      }
+    }
+  ],
+  "edgeAnnotations": [],
+  "aliasEndpointAnnotations": [],
+  "viewerSettings": {}
+}

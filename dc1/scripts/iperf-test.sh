@@ -16,7 +16,7 @@ set -e
 PREFIX="clab-dc1-evpn"
 LEAF_SRV="leaf3"
 LEAF_CLI="leaf1"
-IP_SRV="172.20.1.253"
+IP_SRV="172.20.1.250"
 IP_CLI="172.20.1.251"
 DUR="${1:-15}"
 

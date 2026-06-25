@@ -42,21 +42,6 @@ services:
         ipv4_address: 172.20.1.50
     restart: unless-stopped
 
-  # ---- Oxidized — backup configs réseau ----
-  oxidized:
-    image: oxidized/oxidized:latest
-    container_name: dc1-oxidized
-    volumes:
-      - ./oxidized/config.local:/home/oxidized/.config/oxidized/config
-      - ./oxidized/router.db:/home/oxidized/.config/oxidized/router.db
-      - oxidized-data:/home/oxidized/.config/oxidized
-    networks:
-      fabric:
-        ipv4_address: 172.20.1.60
-    environment:
-      CONFIG_RELOAD_INTERVAL: "3600"
-    restart: unless-stopped
 
 volumes:
   uptime-kuma-data:
-  oxidized-data:
