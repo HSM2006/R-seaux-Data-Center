@@ -70,16 +70,6 @@ cd services/observability && docker compose up -d
 
 Pour DC2 et DC3, voir les README respectifs de chaque dossier.
 
-## Config Catalyst (bordure, a faire une seule fois)
-
-```
-! Nouvelle route vers les services DC1
-ip route 172.20.1.0 255.255.255.0 10.202.0.60
-
-! Annonce BGP
-router bgp 65001
- network 172.20.1.0 mask 255.255.255.0
-```
 
 ## Checklist BBP
 
