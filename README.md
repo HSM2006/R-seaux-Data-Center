@@ -2,26 +2,32 @@
 
 **Groupe** : Houssam, Soyf, Mouhamadi
 **Professeur** : BBP (Big Boss Pouchou)
-**Architecture** : trois datacenters Leaf & Spine en EVPN/VXLAN, interconnectés via une bordure BGP partagée (Catalyst 8000 + Mikrotik) et un tunnel VXLAN dédié entre deux des trois fabrics.
+**Architecture** : trois datacenters Leaf & Spine en EVPN/VXLAN, interconnectés via une bordure BGP en AS 65001 (deux boîtiers partagés entre DC1/DC2, deux boîtiers personnels pour DC3) et un tunnel VXLAN dédié entre DC2 et DC3.
 
 ## Vue d'ensemble
 
 ```
-                         Reseau de la salle 10.202.0.0/16 (eBGP)
-                                 |                  |
-                          Catalyst 8000          Mikrotik
-                              AS 65001  --iBGP--  AS 65001
-                                 |                  |
-        +------------------------------------------------------------------+
-        |                        |                        |               |
-     DC1 (Houssam)           DC2 (Soyf)              DC3 (Mouhamadi)
-     FRR, AS 65000           Arista cEOS, AS 65000   FRR, AS 65001
-     iBGP + EVPN/VXLAN       iBGP + EVPN/VXLAN        OSPF + EVPN/VXLAN
-     VNI 10100               VNI 10200 (services)     VNI 1010 (services)
-                              VNI 1040 (DCI -> DC3)    VNI 1040 (DCI -> DC2, statique)
+              Reseau de la salle 10.202.0.0/16 (eBGP)
+                    |          |          |          |
+             Catalyst 8000  Mikrotik  Catalyst    Mikrotik
+              (partage)    (partage)  (Mouhamadi) (Mouhamadi)
+              AS 65001     AS 65001   AS 65001    AS 65001
+                  \           /           \           /
+                   \--iBGP--/             \---iBGP---/
+                       |                       |
+                       +----------iBGP---------+
+                       |                       |
+              DC1 (Houssam)   DC2 (Soyf)   DC3 (Mouhamadi)
+              FRR, AS 65000   Arista cEOS,  FRR, AS 65001
+              iBGP+EVPN/VXLAN AS 65000      OSPF+EVPN/VXLAN
+              VNI 10100       iBGP+EVPN     VNI 1010 (services)
+                              VNI 10200     VNI 1040 (DCI->DC2,
+                              VNI 1040       statique)
+                              (DCI->DC3)
+                                   |<-- VXLAN VNI 1040 -->|
 ```
 
-Chaque datacenter est un fabric leaf-spine independant, deploye et exploite par une seule personne. L'interconnexion entre les trois passe par deux boitiers physiques partages (Catalyst 8000 et Mikrotik, tous les deux en AS 65001, relies entre eux en iBGP), qui font chacun de l'eBGP vers le reseau commun de la salle et vers un fabric. En plus de cette bordure commune, Soyf (DC2) et Mouhamadi (DC3) ont etabli un tunnel VXLAN dedie entre leurs deux fabrics (VNI 1040), configure de maniere statique plutot que par EVPN multi-domaine.
+DC1 (Houssam) et DC2 (Soyf) partagent deux boîtiers physiques communs : un Cisco Catalyst 8000 et un Mikrotik, tous deux en AS 65001, reliés entre eux en iBGP. DC3 (Mouhamadi) dispose de ses propres équipements de bordure : un Catalyst personnel et un Mikrotik personnel, également en AS 65001. Les quatre boîtiers se parlent en iBGP, formant une zone de transit commune : toute route annoncée par l'un des trois fabrics est redistribuée aux deux autres via cette bordure unifiée. En plus de ce routage BGP, Soyf (DC2) et Mouhamadi (DC3) ont établi un tunnel VXLAN dédié entre leurs deux fabrics (VNI 1040), configuré de manière statique plutôt que par EVPN multi-domaine.
 
 ## Structure du depot
 
@@ -43,7 +49,7 @@ DC2 - Soyf/             # Datacenter 2 (Arista cEOS)
 DC3 - Mouhamadi/        # Datacenter 3 (FRR, via Netlab)
   node_files/             # Configs FRR/Linux generees par Netlab
   services/               # Web, DNS (images Docker personnalisees)
-  external-configs/       # Exports Mikrotik/R1 personnels
+  external-configs/       # Exports Mikrotik/Catalyst personnels
   running-configs/        # Etat reel releve sur le lab
   archive/                # Sauvegardes horodatees + ancien materiel 2025
 
