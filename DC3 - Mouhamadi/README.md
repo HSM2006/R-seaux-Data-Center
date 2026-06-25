@@ -1,4 +1,4 @@
-# DevCloud Leaf-Spine FRR EVPN/VxLAN
+# DC3 (Mouhamadi) : DevCloud Leaf-Spine FRR EVPN/VxLAN
 
 Ce lab netlab/containerlab deploie une fabric Leaf-Spine avec 2 spines, 3 leafs et 4 services Linux. Les routeurs reseau sont tous en FRR. L'underlay utilise OSPF, l'overlay prepare EVPN/VxLAN L2 avec VLAN 10 et VNI 1010, sans VRF.
 
