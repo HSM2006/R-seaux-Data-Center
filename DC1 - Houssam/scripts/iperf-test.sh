@@ -9,7 +9,7 @@
 #
 # leaf1 (172.20.1.251) <-- VXLAN --> leaf3 (172.20.1.253)
 #
-# Usage : sudo bash dc1/scripts/iperf-test.sh [duree_sec]
+# Usage : sudo bash 'DC1 - Houssam/scripts/iperf-test.sh' [duree_sec]
 # ============================================================
 set -e
 

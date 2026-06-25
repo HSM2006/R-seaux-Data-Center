@@ -15,9 +15,9 @@ Prometheus : `http://10.202.0.60:9090`
 
 ```bash
 cd ~/R-seaux-Data-Center
-docker build -t frrouting/frr:latest dc1/frr-custom/
-sudo bash dc1/scripts/deploy.sh
-( cd dc1/services/observability && docker compose up -d )
+docker build -t frrouting/frr:latest 'DC1 - Houssam/frr-custom/'
+sudo bash 'DC1 - Houssam/scripts/deploy.sh'
+( cd 'DC1 - Houssam/services/observability' && docker compose up -d )
 ```
 
 `docker ps` doit montrer 11 conteneurs clab + 4 conteneurs d'observabilité.
@@ -100,7 +100,7 @@ docker exec clab-dc1-evpn-web1 nslookup web2.dc1.local 172.20.1.20
 docker exec clab-dc1-evpn-web1 nslookup web2.dc1.local 172.20.1.21
 
 # Test de bascule automatique (coupe dns1, dns2 prend le relais)
-sudo bash dc1/scripts/test-dns-ha.sh
+sudo bash 'DC1 - Houssam/scripts/test-dns-ha.sh'
 ```
 
 **Ce qu'on montre** : deux résolveurs Unbound, bascule transparente.
@@ -161,7 +161,7 @@ snmpget -v2c -c public 172.20.20.11:10161 .1.3.6.1.2.1.1.6.0
 
 ```bash
 # Vérification automatique de toute la chaîne
-bash dc1/scripts/check-telemetry.sh
+bash 'DC1 - Houssam/scripts/check-telemetry.sh'
 ```
 
 Résultat attendu :
@@ -186,7 +186,7 @@ Panels visibles :
 ## 8. Génération de trafic (voir les courbes bouger dans Grafana)
 
 ```bash
-sudo bash dc1/scripts/iperf-test.sh 30
+sudo bash 'DC1 - Houssam/scripts/iperf-test.sh' 30
 ```
 
 iperf3 entre leaf1 et leaf3 à travers le VXLAN (2.3 Gbps TCP, 0% perte UDP).
@@ -223,7 +223,7 @@ show ip bgp neighbors advertised-routes
 docker logs dc1-oxidized 2>&1 | tail -20
 
 # Nautobot (source de vérité, peuplée via API)
-python3 dc1/scripts/populate-nautobot.py
+python3 'DC1 - Houssam/scripts/populate-nautobot.py'
 # puis http://172.20.1.70:8080
 
 # Historique Git (commits progressifs individuels)
@@ -236,10 +236,10 @@ git log --oneline --author=Houssam | head -20
 
 ```bash
 # Montrer le Dockerfile et ce qu'il inclut
-cat dc1/frr-custom/Dockerfile
+cat 'DC1 - Houssam/frr-custom/Dockerfile'
 
 # Montrer le script de démarrage (SNMP + AgentX automatiques)
-cat dc1/frr-custom/docker-start.sh
+cat 'DC1 - Houssam/frr-custom/docker-start.sh'
 ```
 
 **Ce qu'on montre** : image construite nous-mêmes, pas un produit tout fait.

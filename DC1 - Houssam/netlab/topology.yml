@@ -80,6 +80,6 @@ links:
     prefix: 172.16.0.10/31
 
 # Note post-déploiement :
-# Après `netlab up`, lancer dc1/scripts/setup-vtep.sh sur chaque leaf
+# Après `netlab up`, lancer DC1 - Houssam/scripts/setup-vtep.sh sur chaque leaf
 # pour créer les bridges br10100 + interfaces vxlan10100
-# Puis `docker-compose up -d` dans dc1/services/
+# Puis `docker-compose up -d` dans DC1 - Houssam/services/

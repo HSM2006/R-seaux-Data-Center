@@ -10,7 +10,7 @@
 # On coupe dns1, on re-teste : dns2 répond toujours.
 # Le client a les deux serveurs dans son resolv.conf -> bascule auto.
 #
-# Usage : sudo bash dc1/scripts/test-dns-ha.sh
+# Usage : sudo bash 'DC1 - Houssam/scripts/test-dns-ha.sh'
 # ============================================================
 set -e
 

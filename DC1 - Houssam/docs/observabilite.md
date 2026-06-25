@@ -27,19 +27,19 @@ Deux choses passent par SNMP :
 
 ```bash
 # 1. Le fabric doit déjà tourner (deploy.sh)
-sudo bash dc1/scripts/deploy.sh
+sudo bash 'DC1 - Houssam/scripts/deploy.sh'
 
 # 2. Activer SNMP sur les leafs/spines (snmpd + AgentX FRR)
-sudo bash dc1/scripts/enable-snmp.sh
+sudo bash 'DC1 - Houssam/scripts/enable-snmp.sh'
 
 # 3. Lancer la stack d'observabilité (Prometheus + Grafana + exporters)
-cd dc1/services/observability && docker compose up -d && cd -
+cd 'DC1 - Houssam/services/observability' && docker compose up -d && cd -
 
 # 4. (optionnel) métriques FRR natives en plus du SNMP
-sudo bash dc1/scripts/enable-frr-exporter.sh
+sudo bash 'DC1 - Houssam/scripts/enable-frr-exporter.sh'
 
 # 5. Vérifier toute la chaîne
-bash dc1/scripts/check-telemetry.sh
+bash 'DC1 - Houssam/scripts/check-telemetry.sh'
 ```
 
 Grafana : `http://<IP_VM>:3000` (admin / DevCloud2025!).
@@ -49,7 +49,7 @@ Dashboard auto-chargé : **DC1 - Réseau & Services** (dossier *DC1 - SAE DevClo
 
 ```bash
 # Génère du trafic web1 -> web3 à travers l'overlay VXLAN
-sudo bash dc1/scripts/iperf-test.sh 20
+sudo bash 'DC1 - Houssam/scripts/iperf-test.sh' 20
 ```
 
 Pendant ce temps, dans Grafana, les courbes "Débit par interface" décollent, et

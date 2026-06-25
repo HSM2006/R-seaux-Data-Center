@@ -7,7 +7,7 @@
 # conteneurs (docker-start.sh). Ce script sert a forcer un restart
 # manuel SANS redeployer, et a (re)activer l'AgentX FRR.
 #
-# Usage : sudo bash dc1/scripts/enable-snmp.sh
+# Usage : sudo bash 'DC1 - Houssam/scripts/enable-snmp.sh'
 # ============================================================
 set -e
 

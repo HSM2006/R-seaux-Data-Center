@@ -29,7 +29,7 @@ git pull
 ## 1. Reconstruire l'image FRR (elle contient maintenant snmpd + iperf3)
 
 ```bash
-docker build -t frrouting/frr:latest dc1/frr-custom/
+docker build -t frrouting/frr:latest 'DC1 - Houssam/frr-custom/'
 ```
 > Si le build échoue sur `frr-snmp`, ce n'est pas bloquant : il est en best-effort,
 > l'image se construit quand même (IF-MIB via snmpd reste dispo).
@@ -37,7 +37,7 @@ docker build -t frrouting/frr:latest dc1/frr-custom/
 ## 2. Redéployer le fabric (DNS corrigé inclus)
 
 ```bash
-sudo bash dc1/scripts/deploy.sh
+sudo bash 'DC1 - Houssam/scripts/deploy.sh'
 ```
 
 Vérifier le DNS tout de suite :
@@ -53,13 +53,13 @@ docker exec clab-dc1-evpn-web1 nslookup web2.dc1.local 172.20.1.20
 Test de bascule HA DNS (le test du prof) :
 
 ```bash
-sudo bash dc1/scripts/test-dns-ha.sh
+sudo bash 'DC1 - Houssam/scripts/test-dns-ha.sh'
 ```
 
 ## 3. Activer SNMP sur les leafs/spines
 
 ```bash
-sudo bash dc1/scripts/enable-snmp.sh
+sudo bash 'DC1 - Houssam/scripts/enable-snmp.sh'
 ```
 
 Vérifier que les leafs répondent en SNMP :
@@ -74,7 +74,7 @@ snmpwalk -v2c -c public 172.20.20.11 .1.3.6.1.2.1.15.3.1.2
 ## 4. Lancer la stack d'observabilité
 
 ```bash
-cd dc1/services/observability
+cd 'DC1 - Houssam/services/observability'
 docker compose up -d
 cd ../../..
 ```
@@ -83,29 +83,29 @@ Grafana : `http://<IP_VM>:3000` (admin / DevCloud2025!)
 → dashboard **DC1 - Réseau & Services** (dossier *DC1 - SAE DevCloud*).
 Prometheus cibles : `http://<IP_VM>:9090/targets`
 
-(Optionnel, métriques FRR natives en plus : `sudo bash dc1/scripts/enable-frr-exporter.sh`)
+(Optionnel, métriques FRR natives en plus : `sudo bash 'DC1 - Houssam/scripts/enable-frr-exporter.sh'`)
 
 ## 5. Générer du trafic et le voir monter
 
 ```bash
-sudo bash dc1/scripts/iperf-test.sh 20
+sudo bash 'DC1 - Houssam/scripts/iperf-test.sh' 20
 ```
 → débit affiché en CLI, compteurs SNMP qui montent, et courbe de débit dans Grafana.
 
 ## 6. Vérifier toute la chaîne d'un coup
 
 ```bash
-bash dc1/scripts/check-telemetry.sh
+bash 'DC1 - Houssam/scripts/check-telemetry.sh'
 ```
 
 ## Ordre court (copier-coller)
 
 ```bash
 cd ~/R-seaux-Data-Center && git pull
-docker build -t frrouting/frr:latest dc1/frr-custom/
-sudo bash dc1/scripts/deploy.sh
-sudo bash dc1/scripts/enable-snmp.sh
-( cd dc1/services/observability && docker compose up -d )
-bash dc1/scripts/check-telemetry.sh
-sudo bash dc1/scripts/iperf-test.sh 20
+docker build -t frrouting/frr:latest 'DC1 - Houssam/frr-custom/'
+sudo bash 'DC1 - Houssam/scripts/deploy.sh'
+sudo bash 'DC1 - Houssam/scripts/enable-snmp.sh'
+( cd 'DC1 - Houssam/services/observability' && docker compose up -d )
+bash 'DC1 - Houssam/scripts/check-telemetry.sh'
+sudo bash 'DC1 - Houssam/scripts/iperf-test.sh' 20
 ```

@@ -11,7 +11,7 @@
 # Nécessite Internet sur la VM (télécharge le binaire depuis GitHub).
 # Le SNMP suffit pour l'éval : ce script est un bonus.
 #
-# Usage : sudo bash dc1/scripts/enable-frr-exporter.sh [version]
+# Usage : sudo bash 'DC1 - Houssam/scripts/enable-frr-exporter.sh' [version]
 # ============================================================
 set -e
 
