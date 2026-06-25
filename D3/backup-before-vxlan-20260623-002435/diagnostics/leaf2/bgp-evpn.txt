@@ -1,0 +1,40 @@
+BGP table version is 70, local router ID is 10.255.0.2
+Status codes: s suppressed, d damped, h history, * valid, > best, i - internal
+Origin codes: i - IGP, e - EGP, ? - incomplete
+EVPN type-1 prefix: [1]:[EthTag]:[ESI]:[IPlen]:[VTEP-IP]:[Frag-id]
+EVPN type-2 prefix: [2]:[EthTag]:[MAClen]:[MAC]:[IPlen]:[IP]
+EVPN type-3 prefix: [3]:[EthTag]:[IPlen]:[OrigIP]
+EVPN type-4 prefix: [4]:[ESI]:[IPlen]:[OrigIP]
+EVPN type-5 prefix: [5]:[EthTag]:[IPlen]:[IP]
+
+   Network          Next Hop            Metric LocPrf Weight Path
+Route Distinguisher: 10.255.0.1:10
+ *>i [2]:[0]:[48]:[ca:f4:00:03:00:00]:[32]:[10.25.0.30]
+                    10.255.0.1(spine2)
+                                                    100      0 i
+                    RT:65001:10 ET:8
+ *=i                  10.255.0.1(spine1)
+                                                    100      0 i
+                    RT:65001:10 ET:8
+ *>i [3]:[0]:[32]:[10.255.0.1]
+                    10.255.0.1(spine2)
+                                                    100      0 i
+                    RT:65001:10 ET:8
+ *=i                  10.255.0.1(spine1)
+                                                    100      0 i
+                    RT:65001:10 ET:8
+Route Distinguisher: 10.255.0.2:10
+ *>  [3]:[0]:[32]:[10.255.0.2]
+                    10.255.0.2(leaf2)
+                                                         32768 i
+                    ET:8 RT:65001:10
+Route Distinguisher: 10.255.0.3:10
+ *>i [3]:[0]:[32]:[10.255.0.3]
+                    10.255.0.3(spine2)
+                                                    100      0 i
+                    RT:65001:10 ET:8
+ *=i                  10.255.0.3(spine1)
+                                                    100      0 i
+                    RT:65001:10 ET:8
+
+Displayed 4 out of 7 total prefixes

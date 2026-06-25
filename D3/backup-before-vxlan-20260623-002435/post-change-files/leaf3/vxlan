@@ -1,0 +1,33 @@
+#!/bin/bash
+set -e
+
+# Existing services VNI 1010.
+if ! ip link show vxlan1010 >/dev/null 2>&1; then
+  ip link add vxlan1010 type vxlan id 1010 dstport 4789 local 10.255.0.3 nolearning
+fi
+if [ ! -e /sys/devices/virtual/net/vlan10 ]; then
+  ip link add vlan10 type bridge
+  ip link set up dev vlan10
+fi
+ip link set dev vxlan1010 master vlan10
+ip link set vlan10 type bridge stp_state 0
+ip link set mtu 1500 addrgenmode none dev vxlan1010
+bridge link set dev vxlan1010 learning off || true
+ip link set up dev vxlan1010
+
+# Prepared binomes VNI 1040. It will only exchange traffic when remote VTEP 10.192.1.27 is configured.
+if ip link show Vxlan1 >/dev/null 2>&1; then
+  ip link del Vxlan1
+fi
+if [ ! -e /sys/devices/virtual/net/Vlan40 ]; then
+  ip link add Vlan40 type bridge
+  ip link set up dev Vlan40
+fi
+ip link add Vxlan1 type vxlan id 1040 local 10.255.0.3 remote 10.192.1.27 dstport 4789 nolearning
+ip link set dev Vxlan1 master Vlan40
+ip link set Vlan40 type bridge stp_state 0
+ip link set mtu 1500 addrgenmode none dev Vxlan1
+bridge link set dev Vxlan1 learning off || true
+ip link set up dev Vxlan1
+
+exit $?

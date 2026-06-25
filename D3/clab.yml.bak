@@ -1,0 +1,170 @@
+name: devcloudevpn
+prefix: "clab"
+
+mgmt:
+  network: netlab_mgmt
+  ipv4-subnet: 192.168.121.0/24
+  # Note: 'start' not validated
+topology:
+  nodes:
+    spine1:
+      mgmt-ipv4: 192.168.121.101
+      kind: linux
+      restart-policy: 'no'
+      exec: ['sleep 1']
+      image: quay.io/frrouting/frr:10.6.1
+      runtime: docker
+      group: spines,as65001
+      binds:
+      - node_files/spine1/initial:/etc/config/01-initial.sh
+      - node_files/spine1/ospf:/etc/config/02-ospf.sh
+      - node_files/spine1/bgp:/etc/config/03-bgp.sh
+      - node_files/spine1/evpn:/etc/config/04-evpn.sh
+      - node_files/spine1/daemons:/etc/frr/daemons
+      - node_files/-shared-hosts:/etc/hosts:ro
+    spine2:
+      mgmt-ipv4: 192.168.121.102
+      kind: linux
+      restart-policy: 'no'
+      exec: ['sleep 1']
+      image: quay.io/frrouting/frr:10.6.1
+      runtime: docker
+      group: spines,as65001
+      binds:
+      - node_files/spine2/initial:/etc/config/01-initial.sh
+      - node_files/spine2/ospf:/etc/config/02-ospf.sh
+      - node_files/spine2/bgp:/etc/config/03-bgp.sh
+      - node_files/spine2/evpn:/etc/config/04-evpn.sh
+      - node_files/spine2/daemons:/etc/frr/daemons
+      - node_files/-shared-hosts:/etc/hosts:ro
+    leaf1:
+      mgmt-ipv4: 192.168.121.103
+      kind: linux
+      restart-policy: 'no'
+      exec: ['sleep 1']
+      image: quay.io/frrouting/frr:10.6.1
+      runtime: docker
+      group: leafs,as65001
+      binds:
+      - node_files/leaf1/initial:/etc/config/01-initial.sh
+      - node_files/leaf1/vlan:/etc/config/02-vlan.sh
+      - node_files/leaf1/ospf:/etc/config/03-ospf.sh
+      - node_files/leaf1/bgp:/etc/config/04-bgp.sh
+      - node_files/leaf1/vxlan:/etc/config/05-vxlan.sh
+      - node_files/leaf1/evpn:/etc/config/06-evpn.sh
+      - node_files/leaf1/daemons:/etc/frr/daemons
+      - node_files/-shared-hosts:/etc/hosts:ro
+    leaf2:
+      mgmt-ipv4: 192.168.121.104
+      kind: linux
+      restart-policy: 'no'
+      exec: ['sleep 1']
+      image: quay.io/frrouting/frr:10.6.1
+      runtime: docker
+      group: leafs,as65001
+      binds:
+      - node_files/leaf2/initial:/etc/config/01-initial.sh
+      - node_files/leaf2/vlan:/etc/config/02-vlan.sh
+      - node_files/leaf2/ospf:/etc/config/03-ospf.sh
+      - node_files/leaf2/bgp:/etc/config/04-bgp.sh
+      - node_files/leaf2/vxlan:/etc/config/05-vxlan.sh
+      - node_files/leaf2/evpn:/etc/config/06-evpn.sh
+      - node_files/leaf2/daemons:/etc/frr/daemons
+      - node_files/-shared-hosts:/etc/hosts:ro
+    leaf3:
+      mgmt-ipv4: 192.168.121.105
+      kind: linux
+      restart-policy: 'no'
+      exec: ['sleep 1']
+      image: quay.io/frrouting/frr:10.6.1
+      runtime: docker
+      group: leafs,as65001
+      binds:
+      - node_files/leaf3/initial:/etc/config/01-initial.sh
+      - node_files/leaf3/vlan:/etc/config/02-vlan.sh
+      - node_files/leaf3/ospf:/etc/config/03-ospf.sh
+      - node_files/leaf3/bgp:/etc/config/04-bgp.sh
+      - node_files/leaf3/vxlan:/etc/config/05-vxlan.sh
+      - node_files/leaf3/evpn:/etc/config/06-evpn.sh
+      - node_files/leaf3/daemons:/etc/frr/daemons
+      - node_files/-shared-hosts:/etc/hosts:ro
+    web1:
+      mgmt-ipv4: 192.168.121.106
+      kind: linux
+      restart-policy: 'no'
+      cmd: 'sleep infinity'
+      exec: ['sh -c "cd /www && python -m http.server 80 >/tmp/http.log 2>&1 &"']
+      image: devcloud-web:latest
+      runtime: docker
+      group: services,netlab_no_reload,netlab_no_collect
+      binds:
+      - services/web1/index.html:/www/index.html:ro
+      - node_files/-shared-hosts:/etc/hosts:ro
+    annuaire:
+      mgmt-ipv4: 192.168.121.107
+      kind: linux
+      restart-policy: 'no'
+      cmd: 'sleep infinity'
+      image: alpine:latest
+      runtime: docker
+      group: services,netlab_no_reload,netlab_no_collect
+      binds:
+      - node_files/-shared-hosts:/etc/hosts:ro
+    dns1:
+      mgmt-ipv4: 192.168.121.108
+      kind: linux
+      restart-policy: 'no'
+      image: devcloud-unbound:latest
+      runtime: docker
+      group: services,netlab_no_reload,netlab_no_collect
+      binds:
+      - services/unbound/unbound.conf:/etc/unbound/unbound.conf:ro
+      - node_files/-shared-hosts:/etc/hosts:ro
+    web2:
+      mgmt-ipv4: 192.168.121.109
+      kind: linux
+      restart-policy: 'no'
+      cmd: 'sleep infinity'
+      exec: ['sh -c "cd /www && python -m http.server 80 >/tmp/http.log 2>&1 &"']
+      image: devcloud-web:latest
+      runtime: docker
+      group: services,netlab_no_reload,netlab_no_collect
+      binds:
+      - services/web2/index.html:/www/index.html:ro
+      - node_files/-shared-hosts:/etc/hosts:ro
+
+
+  links:
+  - endpoints:
+    - "spine1:eth1"
+    - "leaf1:eth1"
+  - endpoints:
+    - "spine2:eth1"
+    - "leaf1:eth2"
+  - endpoints:
+    - "spine1:eth2"
+    - "leaf2:eth1"
+  - endpoints:
+    - "spine2:eth2"
+    - "leaf2:eth2"
+  - endpoints:
+    - "spine1:eth3"
+    - "leaf3:eth1"
+  - endpoints:
+    - "spine2:eth3"
+    - "leaf3:eth2"
+  - endpoints:
+    - "spine1:eth4"
+    - "macvlan:ens18"
+  - endpoints:
+    - "leaf1:eth3"
+    - "web1:eth1"
+  - endpoints:
+    - "leaf2:eth3"
+    - "annuaire:eth1"
+  - endpoints:
+    - "leaf3:eth3"
+    - "dns1:eth1"
+  - endpoints:
+    - "leaf3:eth4"
+    - "web2:eth1"

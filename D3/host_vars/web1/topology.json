@@ -1,0 +1,126 @@
+{
+  "clab": {
+    "kind": "linux",
+    "config_templates": [
+      {
+        "source": "initial",
+        "target": "",
+        "mode": "ns"
+      },
+      {
+        "source": "vlan",
+        "target": "",
+        "mode": "ns"
+      },
+      {
+        "source": "routing",
+        "target": "",
+        "mode": "ns"
+      },
+      {
+        "source": "hosts",
+        "target": "/etc/hosts",
+        "mode": "shared"
+      }
+    ],
+    "image": "devcloud-web:latest",
+    "cmd": "sleep infinity",
+    "binds": [
+      {
+        "source": "services/web1/index.html",
+        "target": "/www/index.html",
+        "mode": "ro"
+      },
+      {
+        "target": "/etc/hosts",
+        "source": "node_files/-shared-hosts",
+        "mode": "ro"
+      }
+    ],
+    "exec": [
+      "sh -c \"cd /www && python -m http.server 80 >/tmp/http.log 2>&1 &\""
+    ]
+  },
+  "interfaces": [
+    {
+      "ipv4": "10.25.0.25/29",
+      "linkindex": 8,
+      "type": "lan",
+      "bridge": "devcloudev_8",
+      "name": "web1 -> [leaf1,annuaire,leaf2,dns1,web2...]",
+      "ifindex": 1,
+      "ifname": "eth1",
+      "mtu": 1500,
+      "neighbors": [
+        {
+          "ifname": "vlan10",
+          "node": "leaf1",
+          "vlan": {
+            "mode": "bridge",
+            "name": "services"
+          }
+        },
+        {
+          "ipv4": "10.25.0.26/29",
+          "ifname": "eth1",
+          "node": "annuaire"
+        },
+        {
+          "ifname": "vlan10",
+          "node": "leaf2",
+          "vlan": {
+            "mode": "bridge",
+            "name": "services"
+          }
+        },
+        {
+          "ipv4": "10.25.0.27/29",
+          "ifname": "eth1",
+          "node": "dns1"
+        },
+        {
+          "ipv4": "10.25.0.28/29",
+          "ifname": "eth1",
+          "node": "web2"
+        },
+        {
+          "ifname": "vlan10",
+          "node": "leaf3",
+          "vlan": {
+            "mode": "bridge",
+            "name": "services"
+          }
+        }
+      ]
+    }
+  ],
+  "module": [
+    "vlan",
+    "routing"
+  ],
+  "box": "python:3.13-alpine",
+  "role": "host",
+  "mtu": 1500,
+  "_node_config": {
+    "initial": ":ns",
+    "vlan": ":ns",
+    "routing": ":ns"
+  },
+  "af": {
+    "ipv4": true
+  },
+  "mgmt": {
+    "ifname": "eth0",
+    "mac": "ca:fe:00:06:00:00",
+    "ipv4": "192.168.121.106"
+  },
+  "hostname": "clab-devcloudevpn-web1",
+  "routing": {
+    "static": []
+  },
+  "netlab_ansible_skip_module": [
+    "initial",
+    "vlan",
+    "routing"
+  ]
+}

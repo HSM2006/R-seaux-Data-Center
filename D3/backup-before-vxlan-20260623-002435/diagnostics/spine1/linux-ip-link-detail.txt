@@ -1,0 +1,25 @@
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00 promiscuity 0 allmulti 0 minmtu 0 maxmtu 0 addrgenmode eui64 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 gso_ipv4_max_size 65536 gro_ipv4_max_size 65536 
+2: eth0@if558: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master mgmt state UP mode DEFAULT group default 
+    link/ether 0e:dd:81:72:b2:37 brd ff:ff:ff:ff:ff:ff link-netnsid 0 promiscuity 0 allmulti 0 minmtu 68 maxmtu 65535 
+    veth 
+    vrf_slave table 42 addrgenmode eui64 numtxqueues 2 numrxqueues 2 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 gso_ipv4_max_size 65536 gro_ipv4_max_size 65536 
+3: mgmt: <NOARP,MASTER,UP,LOWER_UP> mtu 65575 qdisc noqueue state UP mode DEFAULT group default qlen 1000
+    link/ether 7a:0e:bb:6c:4d:42 brd ff:ff:ff:ff:ff:ff promiscuity 0 allmulti 0 minmtu 1280 maxmtu 65575 
+    vrf table 42 addrgenmode eui64 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 tso_max_size 65536 tso_max_segs 65535 gro_max_size 65536 gso_ipv4_max_size 65536 gro_ipv4_max_size 65536 
+544: eth1@if545: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default 
+    link/ether aa:c1:ab:c1:98:e7 brd ff:ff:ff:ff:ff:ff link-netnsid 1 promiscuity 0 allmulti 0 minmtu 68 maxmtu 65535 
+    veth addrgenmode eui64 numtxqueues 2 numrxqueues 2 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 gso_ipv4_max_size 65536 gro_ipv4_max_size 65536 
+    altname clab-o-6eebeed5a9966a4f
+552: eth3@if553: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default 
+    link/ether aa:c1:ab:53:d6:54 brd ff:ff:ff:ff:ff:ff link-netnsid 2 promiscuity 0 allmulti 0 minmtu 68 maxmtu 65535 
+    veth addrgenmode eui64 numtxqueues 2 numrxqueues 2 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 gso_ipv4_max_size 65536 gro_ipv4_max_size 65536 
+    altname clab-o-627d7c418b60e3f4
+560: eth2@if559: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default 
+    link/ether aa:c1:ab:50:5d:cb brd ff:ff:ff:ff:ff:ff link-netnsid 3 promiscuity 0 allmulti 0 minmtu 68 maxmtu 65535 
+    veth addrgenmode eui64 numtxqueues 2 numrxqueues 2 gso_max_size 65536 gso_max_segs 65535 tso_max_size 524280 tso_max_segs 65535 gro_max_size 65536 gso_ipv4_max_size 65536 gro_ipv4_max_size 65536 
+    altname clab-o-11a5fe0055922f06
+561: eth4@if436: <BROADCAST,MULTICAST,PROMISC,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default 
+    link/ether aa:c1:ab:c5:c0:87 brd ff:ff:ff:ff:ff:ff link-netnsid 0 promiscuity 1 allmulti 0 minmtu 68 maxmtu 1500 
+    macvlan mode bridge bcqueuelen 1000 usedbcqueuelen 1000 addrgenmode eui64 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 tso_max_size 65536 tso_max_segs 65535 gro_max_size 65536 gso_ipv4_max_size 65536 gro_ipv4_max_size 65536 
+    altname clab-o-77daf79e48a4c38e

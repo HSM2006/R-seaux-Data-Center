@@ -1,0 +1,31 @@
+#!/bin/bash
+#
+set -e
+cat >/tmp/evpn_config <<CONFIG
+router bgp 65001
+ address-family l2vpn evpn
+  advertise-all-vni
+  advertise-svi-ip
+  advertise ipv4 unicast
+
+! Configure explicit Route Targets and RD per L2 VNI; auto-derived differs
+
+  neighbor 10.255.0.254 activate
+  neighbor 10.255.0.1 activate
+  neighbor 10.255.0.1 route-reflector-client
+  neighbor 10.255.0.2 activate
+  neighbor 10.255.0.2 route-reflector-client
+  neighbor 10.255.0.3 activate
+  neighbor 10.255.0.3 route-reflector-client
+
+ exit-address-family
+!
+ 
+exit
+
+! L3 VRF EVPN handling
+!
+do write
+CONFIG
+vtysh -f /tmp/evpn_config
+vtysh -c 'clear bgp *'

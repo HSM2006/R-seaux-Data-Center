@@ -1,0 +1,13 @@
+Interface       Status  VRF             Addresses
+---------       ------  ---             ---------
+eth1            up      default         10.25.0.2/30
+eth2            up      default         10.25.0.10/30
+eth3            up      default         10.25.0.18/30
+eth4            up      default         172.7.0.3/29
+lo              up      default         10.255.0.254/32
+
+Interface       Status  VRF             Addresses
+---------       ------  ---             ---------
+eth0            up      mgmt            192.168.121.101/24
+mgmt            up      mgmt            
+

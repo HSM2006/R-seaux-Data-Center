@@ -1,0 +1,15 @@
+#!/usr/bin/vtysh -f
+!
+! OSPFv2 FRR configuration
+!
+router ospf
+ ospf router-id 10.255.0.3
+ timers throttle spf 10 50 500
+ timers throttle lsa all 100
+ timers lsa min-arrival 100
+ network 10.255.0.3/32 area 0.0.0.0
+ network 10.25.0.16/30 area 0.0.0.0
+ network 10.25.0.20/30 area 0.0.0.0
+exit
+!
+do write

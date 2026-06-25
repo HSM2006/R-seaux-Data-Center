@@ -1,0 +1,12 @@
+#!/bin/sh
+#
+# Add static routes (usually IPv4 routes pointing to the first usable gateway)
+#
+#
+#
+#
+#
+
+
+ip route replace 192.168.121.0/24 dev eth0
+ip route replace default via 10.192.1.1 dev eth1

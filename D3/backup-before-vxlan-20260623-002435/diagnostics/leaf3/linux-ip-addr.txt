@@ -1,0 +1,9 @@
+lo               UNKNOWN        127.0.0.1/8 10.255.0.3/32 ::1/128 
+eth0@if551       UP             192.168.121.105/24 
+mgmt             UP             
+vlan10           UP             
+vxlan1010        UNKNOWN        
+eth4@if550       UP             
+eth1@if552       UP             10.25.0.17/30 
+eth2@if554       UP             10.25.0.21/30 
+eth3@if556       UP             

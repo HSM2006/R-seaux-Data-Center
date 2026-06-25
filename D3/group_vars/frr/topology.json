@@ -1,0 +1,276 @@
+{
+  "ansible_network_os": "frr",
+  "ansible_python_interpreter": "auto_silent",
+  "netlab_initial": "always",
+  "netlab_linux_packages": {
+    "gnupg": "gpg",
+    "curl": "curl",
+    "iproute2": "bridge"
+  },
+  "netlab_frr_daemons": {
+    "bfd": [
+      "bfdd"
+    ],
+    "bgp": [
+      "bgpd"
+    ],
+    "ospf": [
+      "ospfd",
+      "ospf6d"
+    ],
+    "ripv2": [
+      "ripd",
+      "ripngd"
+    ],
+    "isis": [
+      "isisd"
+    ],
+    "vrf": [
+      "bgpd"
+    ],
+    "gateway": [
+      "vrrpd"
+    ],
+    "mpls": [
+      "ldpd"
+    ]
+  },
+  "ansible_connection": "docker",
+  "ansible_user": "root",
+  "netlab_show_command": [
+    "vtysh",
+    "-c",
+    "show $@"
+  ],
+  "netlab_mgmt_vrf": true,
+  "netlab_config_mode": "sh",
+  "netlab_default_shebang": "#!/usr/bin/vtysh -f",
+  "netlab_config_exec": [
+    "sleep 1"
+  ],
+  "features": {
+    "initial": {
+      "ipv4": {
+        "unnumbered": true
+      },
+      "ipv6": {
+        "lla": true,
+        "use_ra": true
+      },
+      "ra": true,
+      "roles": [
+        "host",
+        "router",
+        "bridge"
+      ],
+      "generate_mac": [
+        "svi"
+      ],
+      "collect": true,
+      "reload": true
+    },
+    "bfd": {},
+    "bgp": {
+      "activate_af": true,
+      "advertise": true,
+      "ipv6_lla": true,
+      "rfc8950": true,
+      "local_as": true,
+      "local_as_ibgp": true,
+      "vrf_local_as": true,
+      "import": [
+        "ospf",
+        "ripv2",
+        "isis",
+        "connected",
+        "static",
+        "vrf"
+      ],
+      "community": {
+        "standard": [
+          "standard",
+          "large"
+        ],
+        "large": [
+          "large"
+        ],
+        "extended": [
+          "extended"
+        ],
+        "2octet": [
+          "standard"
+        ]
+      },
+      "confederation": true,
+      "allowas_in": true,
+      "as_override": true,
+      "bfd": true,
+      "default_originate": true,
+      "description": true,
+      "gtsm": true,
+      "passive": true,
+      "password": true,
+      "remove_private_as": true,
+      "rs": true,
+      "rs_client": true,
+      "timers": true,
+      "_default_locpref": true,
+      "aggregate": true,
+      "bandwidth": {
+        "in": "int",
+        "out": "int"
+      },
+      "multihop": {
+        "vrf": true
+      }
+    },
+    "evpn": {
+      "irb": true,
+      "asymmetrical_irb": true,
+      "multi_rt": true,
+      "transport": [
+        "vxlan"
+      ],
+      "ipv6": true
+    },
+    "gateway": {
+      "protocol": [
+        "vrrp",
+        "anycast"
+      ]
+    },
+    "isis": {
+      "circuit_type": true,
+      "import": [
+        "bgp",
+        "ripv2",
+        "ospf",
+        "connected",
+        "static",
+        "vrf"
+      ],
+      "unnumbered": {
+        "ipv4": true,
+        "ipv6": true,
+        "network": true
+      }
+    },
+    "lag": {
+      "passive": false
+    },
+    "mpls": {
+      "ldp": true,
+      "vpn": {
+        "ipv4": true
+      }
+    },
+    "ospf": {
+      "unnumbered": true,
+      "import": [
+        "bgp",
+        "ripv2",
+        "isis",
+        "connected",
+        "static",
+        "vrf"
+      ],
+      "default": true,
+      "password": true,
+      "priority": true,
+      "timers": true,
+      "areas": true
+    },
+    "ripv2": {
+      "ipv4": true,
+      "ipv6": true,
+      "passive": true,
+      "import": [
+        "bgp",
+        "isis",
+        "ospf",
+        "connected",
+        "static",
+        "vrf"
+      ]
+    },
+    "routing": {
+      "policy": {
+        "set": {
+          "locpref": true,
+          "med": true,
+          "weight": true,
+          "prepend": true,
+          "community": {
+            "standard": true,
+            "large": true,
+            "extended": true,
+            "append": true
+          }
+        },
+        "match": {
+          "prefix": true,
+          "nexthop": true,
+          "aspath": true,
+          "community": {
+            "standard": true,
+            "large": true
+          }
+        },
+        "delete": {
+          "community": "clist"
+        }
+      },
+      "prefix": true,
+      "aspath": true,
+      "community": {
+        "standard": true,
+        "large": true
+      },
+      "static": {
+        "vrf": true,
+        "inter_vrf": true,
+        "discard": true
+      }
+    },
+    "sr": {
+      "af": [
+        "ipv4",
+        "ipv6"
+      ],
+      "protocol": [
+        "isis",
+        "ospfv2"
+      ]
+    },
+    "srv6": {
+      "bgp": true,
+      "isis": true,
+      "vpn": true
+    },
+    "stp": {
+      "supported_protocols": [
+        "stp"
+      ],
+      "enable_per_port": false
+    },
+    "vlan": {
+      "mixed_trunk": true,
+      "model": "router",
+      "native_routed": true,
+      "subif_name": "{ifname}.{vlan.access_id}",
+      "svi_interface_name": "vlan{vlan}"
+    },
+    "vrf": {
+      "keep_module": true,
+      "ospfv2": true,
+      "ospfv3": true,
+      "ripv2": true,
+      "ripng": true,
+      "bgp": true,
+      "isis": true
+    },
+    "vxlan": {
+      "vtep6": true
+    }
+  }
+}

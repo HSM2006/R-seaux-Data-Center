@@ -1,0 +1,10 @@
+{
+  "netlab_module": [
+    "vlan",
+    "routing",
+    "ospf",
+    "bgp",
+    "vxlan",
+    "evpn"
+  ]
+}

@@ -1,0 +1,394 @@
+Warning: Permanently added '10.202.1.7' (RSA) to the list of known hosts.
+
+
+
+r1#terminal length 0
+r1#show running-config
+Building configuration...
+
+Current configuration : 7867 bytes
+!
+! Last configuration change at 03:25:54 UTC Tue Jun 23 2026 by admin
+!
+version 17.6
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service call-home
+platform qfp utilization monitor load 80
+platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname r1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition Mgmt-intf
+ rd 65001:1
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+enable secret 9 $9$1De/Gxhgm6ScRE$ZdUPxwdJJ0ZP1S2O9DcH/Oq5M9mQYBELJxB82tvVA0I
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip domain name r1-ssh
+!
+!
+!
+login on-success log
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+crypto pki trustpoint TP-self-signed-514097707
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-514097707
+ revocation-check none
+ rsakeypair TP-self-signed-514097707
+!
+crypto pki trustpoint SLA-TrustPoint
+ enrollment pkcs12
+ revocation-check crl
+!
+!
+crypto pki certificate chain TP-self-signed-514097707
+ certificate self-signed 01
+  3082032E 30820216 A0030201 02020101 300D0609 2A864886 F70D0101 05050030 
+  30312E30 2C060355 04031325 494F532D 53656C66 2D536967 6E65642D 43657274 
+  69666963 6174652D 35313430 39373730 37301E17 0D323630 36313030 39343831 
+  305A170D 33363036 30393039 34383130 5A303031 2E302C06 03550403 1325494F 
+  532D5365 6C662D53 69676E65 642D4365 72746966 69636174 652D3531 34303937 
+  37303730 82012230 0D06092A 864886F7 0D010101 05000382 010F0030 82010A02 
+  82010100 8870E4E8 72784981 7CB91BFF FB6A482D 0075EE96 8F48C049 0B34E069 
+  8024B30D E39E938D FCCC2EDA B10B177B 0B63F7E0 BEC63D52 B8AEF56C 378BBB79 
+  64ED907F CF16511C 6AB2FB73 3D5F14F9 699DE287 4C7773F9 ACC133C9 C0DE8739 
+  98308C5D A533345C 73E7C5D0 166AE031 43AF573B 468839F0 A60FE1DA 89A39EA0 
+  0D78C54A 469E8454 CB40F570 F440A7AE FDE76ACE DDD47B9F 58086E8B C0894D58 
+  1955F0F7 DCB1B760 5C25A5BA 246150EF 0A6DFC7A 42CDD565 339447D4 FA0E5C6A 
+  A66AA8B9 56C544EF A076EFB6 956A6556 E9B40844 8587E19F 49A47965 C233B2BD 
+  4A7AB96B 84E2B08E 1B4D7AF0 DB7B9F15 A57B2E45 6A94F86D D22A4E48 81DF2E5C 
+  CFAE8465 02030100 01A35330 51300F06 03551D13 0101FF04 05300301 01FF301F 
+  0603551D 23041830 168014D7 3B0E4180 BF3019E7 5891E4D6 587ED3A5 2256C330 
+  1D060355 1D0E0416 0414D73B 0E4180BF 3019E758 91E4D658 7ED3A522 56C3300D 
+  06092A86 4886F70D 01010505 00038201 0100507E 9DEEA050 060BAFAE F352AB2C 
+  2434EB1D 3A53FC27 4C690B73 CA99FA64 3C4C3243 EB6D57D1 1A05132E 696550F7 
+  256002D6 8C9BB55C C1B930F4 61C29A5F 1A86E978 E4F6D5F3 AD83A3D5 01072AAF 
+  472E2253 452774A7 80B6FC36 32A40F01 C5EE9708 DF8C0581 069E2937 08495AB9 
+  7A12F712 5CF810C1 2CC6E8E5 9F1C504D C65BDBED F9CDB0BF EDD7121D F2826BFD 
+  142D0E8E 7F723A94 64EEB1E0 C821A6FA 00C2BC68 9EE67E3A 11EEC931 168D881B 
+  6F58998E 961FF065 6A4E8ED2 D8850557 88F87F68 38F55BC0 2F44F84A 93BEC5B6 
+  A5B36656 4A1BCB8E 17DD360C CD5613BA FCE0C219 084257CA 4F241067 BC6ADB50 
+  8FF7F19A B5C1FCA5 6765604A 59F9BB37 AD2D
+  	quit
+crypto pki certificate chain SLA-TrustPoint
+ certificate ca 01
+  30820321 30820209 A0030201 02020101 300D0609 2A864886 F70D0101 0B050030 
+  32310E30 0C060355 040A1305 43697363 6F312030 1E060355 04031317 43697363 
+  6F204C69 63656E73 696E6720 526F6F74 20434130 1E170D31 33303533 30313934 
+  3834375A 170D3338 30353330 31393438 34375A30 32310E30 0C060355 040A1305 
+  43697363 6F312030 1E060355 04031317 43697363 6F204C69 63656E73 696E6720 
+  526F6F74 20434130 82012230 0D06092A 864886F7 0D010101 05000382 010F0030 
+  82010A02 82010100 A6BCBD96 131E05F7 145EA72C 2CD686E6 17222EA1 F1EFF64D 
+  CBB4C798 212AA147 C655D8D7 9471380D 8711441E 1AAF071A 9CAE6388 8A38E520 
+  1C394D78 462EF239 C659F715 B98C0A59 5BBB5CBD 0CFEBEA3 700A8BF7 D8F256EE 
+  4AA4E80D DB6FD1C9 60B1FD18 FFC69C96 6FA68957 A2617DE7 104FDC5F EA2956AC 
+  7390A3EB 2B5436AD C847A2C5 DAB553EB 69A9A535 58E9F3E3 C0BD23CF 58BD7188 
+  68E69491 20F320E7 948E71D7 AE3BCC84 F10684C7 4BC8E00F 539BA42B 42C68BB7 
+  C7479096 B4CB2D62 EA2F505D C7B062A4 6811D95B E8250FC4 5D5D5FB8 8F27D191 
+  C55F0D76 61F9A4CD 3D992327 A8BB03BD 4E6D7069 7CBADF8B DF5F4368 95135E44 
+  DFC7C6CF 04DD7FD1 02030100 01A34230 40300E06 03551D0F 0101FF04 04030201 
+  06300F06 03551D13 0101FF04 05300301 01FF301D 0603551D 0E041604 1449DC85 
+  4B3D31E5 1B3E6A17 606AF333 3D3B4C73 E8300D06 092A8648 86F70D01 010B0500 
+  03820101 00507F24 D3932A66 86025D9F E838AE5C 6D4DF6B0 49631C78 240DA905 
+  604EDCDE FF4FED2B 77FC460E CD636FDB DD44681E 3A5673AB 9093D3B1 6C9E3D8B 
+  D98987BF E40CBD9E 1AECA0C2 2189BB5C 8FA85686 CD98B646 5575B146 8DFC66A8 
+  467A3DF4 4D565700 6ADF0F0D CF835015 3C04FF7C 21E878AC 11BA9CD2 55A9232C 
+  7CA7B7E6 C1AF74F6 152E99B7 B1FCF9BB E973DE7F 5BDDEB86 C71E3B49 1765308B 
+  5FB0DA06 B92AFE7F 494E8A9E 07B85737 F3A58BE1 1A48A229 C37C1E69 39F08678 
+  80DDCD16 D6BACECA EEBC7CF9 8428787B 35202CDC 60E4616A B623CDBD 230E3AFB 
+  418616A9 4093E049 4D10AB75 27E86F73 932E35B5 8862FDAE 0275156F 719BB2F0 
+  D697DF7F 28
+  	quit
+!
+license udi pid C8000V sn 96UQQN103XU
+diagnostic bootup level minimal
+memory free low-watermark processor 68484
+!
+!
+username ${SSH_USERNAME} privilege 15 secret 9 $9$NmJM7bInqSZI.E$yRgLy7ZhSjZtex2tDPU57wmpkwdTPiU1VDduAKH9jiM
+username cisco privilege 15 password 0 cisco 
+username admin privilege 15 password 0 admin
+!
+redundancy
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 1.1.1.1 255.255.255.255
+!
+interface Loopback1
+ vrf forwarding Mgmt-intf
+ no ip address
+!
+interface Loopback2
+ ip address 25.25.25.25 255.255.255.255
+!
+interface GigabitEthernet1
+ ip address 10.202.1.7 255.255.0.0
+ negotiation auto
+!
+interface GigabitEthernet2
+ ip address 172.7.0.1 255.255.255.248
+ negotiation auto
+!
+interface GigabitEthernet3
+ description liens_vers_microtik
+ ip address 172.36.0.1 255.255.255.252
+ negotiation auto
+!
+router ospf 1
+ router-id 1.1.1.1
+ network 25.25.25.25 0.0.0.0 area 0
+ network 172.7.0.0 0.0.0.7 area 0
+ distribute-list prefix OSPF_R1_IN in
+!
+router bgp 65001
+ bgp router-id 25.25.25.25
+ no bgp log-neighbor-changes
+ bgp listen range 10.202.0.0/16 peer-group RR_10_202
+ bgp listen limit 50
+ neighbor RR_10_202 peer-group
+ neighbor RR_10_202 remote-as 65001
+ neighbor RR_10_202 update-source GigabitEthernet1
+ neighbor 10.202.1.12 remote-as 65001
+ neighbor 10.202.1.12 peer-group RR_10_202
+ neighbor 10.202.1.12 update-source Loopback2
+ neighbor 10.255.0.254 remote-as 65001
+ neighbor 10.255.0.254 update-source Loopback2
+ neighbor 172.36.0.2 remote-as 65001
+ neighbor 172.36.0.2 description mikrotik-direct
+ !
+ address-family ipv4
+  network 10.202.0.0 mask 255.255.0.0
+  network 25.25.25.25 mask 255.255.255.255
+  network 172.7.0.0 mask 255.255.255.248
+  neighbor RR_10_202 activate
+  neighbor RR_10_202 route-reflector-client
+  neighbor RR_10_202 next-hop-self
+  neighbor 10.202.1.12 activate
+  neighbor 10.255.0.254 activate
+  neighbor 10.255.0.254 route-reflector-client
+  neighbor 10.255.0.254 next-hop-self
+  neighbor 172.36.0.2 activate
+  neighbor 172.36.0.2 next-hop-self all
+ exit-address-family
+ !
+ address-family ipv4 vrf Mgmt-intf
+ exit-address-family
+!
+ip forward-protocol nd
+ip http server
+ip http authentication local
+ip http secure-server
+!
+ip route 2.2.2.2 255.255.255.255 172.16.0.2
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 10.202.1.5
+ip ssh rsa keypair-name ssh-key
+ip ssh version 2
+!
+!
+!
+ip prefix-list OSPF_R1_IN seq 5 permit 10.255.0.254/32
+ip prefix-list OSPF_R1_IN seq 10 deny 0.0.0.0/0 le 32
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ stopbits 1
+line aux 0
+line vty 0 4
+ login local
+ transport input ssh
+!
+call-home
+ ! If contact email address in call-home is configured as sch-smart-licensing@cisco.com
+ ! the email address configured in Cisco Smart License Portal will be used as contact email address to send SCH notifications.
+ contact-email-addr sch-smart-licensing@cisco.com
+ profile "CiscoTAC-1"
+  active
+  destination transport-method http
+!
+!
+!
+!
+!
+!
+end
+
+r1#show ip bgp summary
+BGP router identifier 25.25.25.25, local AS number 65001
+BGP table version is 3704, main routing table version 3704
+81 network entries using 20088 bytes of memory
+81 path entries using 11016 bytes of memory
+28/28 BGP path/bestpath attribute entries using 8288 bytes of memory
+3 BGP rrinfo entries using 120 bytes of memory
+20 BGP AS-PATH entries using 752 bytes of memory
+0 BGP route-map cache entries using 0 bytes of memory
+0 BGP filter-list cache entries using 0 bytes of memory
+BGP using 40264 total bytes of memory
+BGP activity 964/883 prefixes, 1843/1762 paths, scan interval 60 secs
+81 networks peaked at 03:26:27 Jun 23 2026 UTC (00:04:38.625 ago)
+
+Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+10.202.1.12     4        65001     263     241     3704    0    0 03:29:53       69
+10.255.0.254    4        65001    4439    4356     3704    0    0 03:38:38        7
+172.36.0.2      4        65001      12      72     3704    0    0 00:05:44        2
+BGP peergroup RR_10_202 listen range group members: 
+  10.202.0.0/16 
+
+r1#show ip route
+Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area 
+       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
+       E1 - OSPF external type 1, E2 - OSPF external type 2, m - OMP
+       n - NAT, Ni - NAT inside, No - NAT outside, Nd - NAT DIA
+       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2
+       ia - IS-IS inter area, * - candidate default, U - per-user static route
+       H - NHRP, G - NHRP registered, g - NHRP registration summary
+       o - ODR, P - periodic downloaded static route, l - LISP
+       a - application route
+       + - replicated route, % - next hop override, p - overrides from PfR
+       & - replicated local route overrides by connected
+
+Gateway of last resort is not set
+
+      1.0.0.0/32 is subnetted, 1 subnets
+C        1.1.1.1 is directly connected, Loopback0
+      2.0.0.0/32 is subnetted, 1 subnets
+B        2.2.2.2 [200/0] via 172.36.0.2, 00:04:38
+      10.0.0.0/8 is variably subnetted, 41 subnets, 5 masks
+B        10.0.0.1/32 [200/0] via 10.202.1.12, 03:29:53
+B        10.0.0.2/32 [200/0] via 10.202.1.12, 03:29:53
+B        10.0.0.3/32 [200/0] via 10.202.1.12, 03:29:53
+B        10.0.0.4/32 [200/0] via 10.202.1.12, 03:29:53
+B        10.0.0.5/32 [200/0] via 10.202.1.12, 03:29:53
+B        10.0.0.6/32 [200/0] via 10.202.1.12, 03:29:53
+B        10.0.1.1/32 [200/0] via 10.202.1.12, 03:29:53
+B        10.0.1.2/32 [200/0] via 10.202.1.12, 03:29:53
+B        10.0.1.3/32 [200/0] via 10.202.1.12, 03:29:53
+B        10.0.1.4/32 [200/0] via 10.202.1.12, 03:29:53
+B        10.0.1.5/32 [200/0] via 10.202.1.12, 03:29:53
+B        10.1.0.0/30 [200/0] via 10.202.1.12, 03:29:53
+B        10.1.0.4/30 [200/0] via 10.202.1.12, 03:29:53
+B        10.1.0.8/30 [200/0] via 10.202.1.12, 03:29:53
+B        10.1.0.12/30 [200/0] via 10.202.1.12, 03:29:53
+B        10.1.0.16/30 [200/0] via 10.202.1.12, 03:29:53
+B        10.1.0.20/30 [200/0] via 10.202.1.12, 03:29:53
+B        10.25.0.0/30 [200/0] via 10.255.0.254, 00:15:00
+B        10.25.0.24/29 [200/0] via 10.255.0.254, 03:38:38
+C        10.202.0.0/16 is directly connected, GigabitEthernet1
+L        10.202.1.7/32 is directly connected, GigabitEthernet1
+B        10.202.7.0/24 [200/0] via 10.202.1.12, 03:29:53
+B        10.255.0.1/32 [200/0] via 10.255.0.254, 03:38:38
+B        10.255.0.2/32 [200/0] via 10.255.0.254, 03:38:38
+B        10.255.0.3/32 [200/0] via 10.255.0.254, 03:38:38
+B        10.255.0.11/32 [200/0] via 10.202.1.12, 03:29:53
+B        10.255.0.12/32 [200/0] via 10.202.1.12, 03:29:53
+B        10.255.0.13/32 [200/0] via 10.202.1.12, 03:29:53
+B        10.255.0.20/32 [200/0] via 10.202.1.12, 03:29:53
+B        10.255.0.253/32 [200/0] via 10.255.0.254, 03:38:38
+O        10.255.0.254/32 [110/1] via 172.7.0.3, 20:03:07, GigabitEthernet2
+B        10.255.1.0/30 [200/0] via 10.202.1.12, 03:29:53
+B        10.255.1.4/30 [200/0] via 10.202.1.12, 03:29:53
+B        10.255.1.8/30 [200/0] via 10.202.1.12, 03:29:53
+B        10.255.2.0/30 [200/0] via 10.202.1.12, 03:29:53
+B        10.255.2.4/30 [200/0] via 10.202.1.12, 03:29:53
+B        10.255.2.8/30 [200/0] via 10.202.1.12, 03:29:53
+B        10.255.3.0/30 [200/0] via 10.202.1.12, 03:29:53
+B        10.255.9.0/30 [200/0] via 10.202.1.12, 03:29:53
+B        10.255.10.0/30 [200/0] via 10.202.1.12, 03:29:53
+B        10.255.11.0/30 [200/0] via 10.202.1.12, 03:29:53
+      25.0.0.0/32 is subnetted, 1 subnets
+C        25.25.25.25 is directly connected, Loopback2
+      172.7.0.0/16 is variably subnetted, 2 subnets, 2 masks
+C        172.7.0.0/29 is directly connected, GigabitEthernet2
+L        172.7.0.1/32 is directly connected, GigabitEthernet2
+      172.16.0.0/16 is variably subnetted, 10 subnets, 4 masks
+B        172.16.1.0/25 [200/0] via 10.202.1.12, 03:29:53
+B        172.16.1.128/25 [200/0] via 10.202.1.12, 03:29:53
+B        172.16.2.0/25 [200/0] via 10.202.1.12, 03:29:53
+B        172.16.2.0/30 [200/0] via 10.202.1.12, 00:23:07
+B        172.16.2.128/25 [200/0] via 10.202.1.12, 03:29:53
+B        172.16.30.0/24 [200/0] via 10.202.1.12, 03:29:53
+B        172.16.31.0/24 [200/0] via 10.202.1.12, 03:29:53
+B        172.16.255.14/32 [200/0] via 10.202.1.12, 00:23:07
+B        172.16.255.15/32 [200/0] via 10.202.1.12, 00:23:07
+B        172.16.255.16/32 [200/0] via 10.202.1.12, 00:23:07
+      172.20.0.0/24 is subnetted, 2 subnets
+B        172.20.1.0 [200/0] via 10.202.1.12, 02:19:12
+B        172.20.2.0 [200/0] via 10.202.1.12, 00:23:07
+      172.36.0.0/16 is variably subnetted, 2 subnets, 2 masks
+C        172.36.0.0/30 is directly connected, GigabitEthernet3
+L        172.36.0.1/32 is directly connected, GigabitEthernet3
+      172.37.0.0/30 is subnetted, 1 subnets
+B        172.37.0.0 [200/0] via 10.202.1.12, 01:46:43
+      192.168.60.0/24 is variably subnetted, 8 subnets, 4 masks
+B        192.168.60.60/30 [200/0] via 10.202.1.12, 03:29:53
+B        192.168.60.96/27 [200/0] via 10.202.1.12, 03:29:53
+B        192.168.60.97/32 [200/0] via 10.202.1.12, 03:29:53
+B        192.168.60.98/32 [200/0] via 10.202.1.12, 03:29:53
+B        192.168.60.99/32 [200/0] via 10.202.1.12, 03:29:53
+B        192.168.60.100/32 [200/0] via 10.202.1.12, 03:29:53
+B        192.168.60.101/32 [200/0] via 10.202.1.12, 03:29:53
+B        192.168.60.128/26 [200/0] via 10.202.1.12, 03:29:53
+      192.168.80.0/24 is variably subnetted, 14 subnets, 5 masks
+B        192.168.80.0/24 [200/0] via 10.202.1.12, 03:29:53
+B        192.168.80.96/27 [200/0] via 10.202.1.12, 03:29:53
+B        192.168.80.97/32 [200/0] via 10.202.1.12, 03:29:53
+B        192.168.80.98/32 [200/0] via 10.202.1.12, 03:29:53
+B        192.168.80.99/32 [200/0] via 10.202.1.12, 03:29:53
+B        192.168.80.100/32 [200/0] via 10.202.1.12, 03:29:53
+B        192.168.80.101/32 [200/0] via 10.202.1.12, 03:29:53
+B        192.168.80.128/25 [200/0] via 10.202.1.12, 03:29:53
+B        192.168.80.128/30 [200/0] via 10.202.1.12, 03:29:53
+B        192.168.80.132/30 [200/0] via 10.202.1.12, 03:29:53
+B        192.168.80.136/30 [200/0] via 10.202.1.12, 03:29:53
+B        192.168.80.140/30 [200/0] via 10.202.1.12, 03:29:53
+B        192.168.80.144/30 [200/0] via 10.202.1.12, 03:29:53
+B        192.168.80.148/30 [200/0] via 10.202.1.12, 03:29:53
+B     192.168.81.0/24 [200/0] via 10.202.1.12, 03:29:53
+B     192.168.82.0/24 [200/0] via 10.202.1.12, 03:29:53
+r1#exit
+Connection to 10.202.1.7 closed by remote host.
+Connection to 10.202.1.7 closed.

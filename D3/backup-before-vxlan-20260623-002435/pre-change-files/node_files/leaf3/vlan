@@ -1,0 +1,17 @@
+#!/bin/bash
+#
+set -e # Exit immediately when any command fails
+set -x # Track commands for troubleshooting
+#
+if [ ! -e /sys/devices/virtual/net/vlan10 ]; then
+  ip link add vlan10 type bridge
+  ip link set dev vlan10 address ca:f4:00:05:00:00
+
+  ip addr flush dev vlan10
+  sysctl -w net.ipv6.conf.vlan10.disable_ipv6=1
+fi
+
+ip link set dev eth3 master vlan10
+ip link set dev eth4 master vlan10
+
+ip link set dev vlan10 up
